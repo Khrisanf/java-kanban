@@ -1,10 +1,13 @@
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import model.TaskStatus;
-import service.TaskManager;
+package app;
 
-import javax.sound.midi.Soundbank;
+import app.model.Epic;
+import app.model.Subtask;
+import app.model.Task;
+import app.model.TaskStatus;
+import app.service.TaskManager;
+
+
+
 
 public class Main {
 
@@ -12,24 +15,24 @@ public class Main {
         TaskManager manager = new TaskManager();
 
         //common taks
-        Task task1 = new Task(0, "Moving out", "Pack boxes", TaskStatus.NEW);
-        Task task2 = new Task(0, "Studying", "Pass the module about Java", TaskStatus.NEW);
+        Task task1 = new Task( "Moving out", "Pack boxes", TaskStatus.NEW);
+        Task task2 = new Task( "Studying", "Pass the module about Java", TaskStatus.NEW);
         manager.addTask(task1);
         manager.addTask(task2);
 
         //create epic with 2 subtasks
-        Epic epic1 = new Epic(0, "Moving out to another town", "Move to Tomsk", TaskStatus.NEW);
+        Epic epic1 = new Epic("Moving out to another town", "Move to Tomsk", TaskStatus.NEW);
         manager.addEpic(epic1);
 
-        Subtask subtask1 = new Subtask(0, "Pack clothes", "Pack a bag", TaskStatus.NEW, epic1);
-        Subtask subtask2 = new Subtask(0, "Apartment rental", "Rent for some times", TaskStatus.NEW, epic1);
+        Subtask subtask1 = new Subtask("Pack clothes", "Pack a bag", TaskStatus.NEW, epic1.getId());
+        Subtask subtask2 = new Subtask("Apartment rental", "Rent for some times", TaskStatus.NEW, epic1.getId());
         manager.addSubtaskByEpic(subtask1);
         manager.addSubtaskByEpic(subtask2);
 
         //create epic with 1 subtask
-        Epic epic2 = new Epic(0, "Session", "Pass deadlines", TaskStatus.NEW);
+        Epic epic2 = new Epic("Session", "Pass deadlines", TaskStatus.NEW);
         manager.addEpic(epic2);
-        Subtask subtask3 = new Subtask(0, "Pass java", "Pass projects", TaskStatus.NEW, epic2);
+        Subtask subtask3 = new Subtask("Pass java", "Pass projects", TaskStatus.NEW, epic2.getId());
         manager.addSubtaskByEpic(subtask3);
 
         //print all tasks
@@ -45,8 +48,16 @@ public class Main {
         //update statuses
         task1.setStatus(TaskStatus.DONE);
         subtask1.setStatus(TaskStatus.IN_PROGRESS);
+        manager.updateSubtask(subtask1);
+
         subtask2.setStatus(TaskStatus.DONE);
+        manager.updateSubtask(subtask2);
+
         subtask3.setStatus(TaskStatus.DONE);
+        manager.updateSubtask(subtask3);
+
+        epic1 = manager.getEpicById(epic1.getId());
+        epic2 = manager.getEpicById(epic2.getId());
 
         System.out.println("\n After updating of statuses: ");
         System.out.println("Task 1: " + task1);

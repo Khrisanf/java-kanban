@@ -102,7 +102,7 @@ public class TaskManager {
                 allDone = false;
             }
             if (status == TaskStatus.IN_PROGRESS) {
-                allDone = false;
+                anyInProgress = true;
             }
         }
         if (allDone) {

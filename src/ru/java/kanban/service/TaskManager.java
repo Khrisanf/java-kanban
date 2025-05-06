@@ -1,9 +1,6 @@
-package app.service;
+package ru.java.kanban.service;
 
-import app.model.Epic;
-import app.model.Subtask;
-import app.model.Task;
-import app.model.TaskStatus;
+import ru.java.kanban.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +23,7 @@ public class TaskManager {
     public void deleteAllTasks() {
         tasks.clear();
     }
-    public Task getTaskById(int id) {
+    public Task getTaskById(Integer id) {
         return tasks.get(id);
     }
 
@@ -37,7 +34,7 @@ public class TaskManager {
     }
 
 
-    public void deleteTaskById(int id) {
+    public void deleteTaskById(Integer id) {
         tasks.remove(id);
     }
 
@@ -52,15 +49,16 @@ public class TaskManager {
     }
 
     public void deleteAllEpics() {
-        List<Integer> epicIds = new ArrayList<>(epics.keySet());
-
-        for (Integer id : epicIds) {
-            subtasks.values().removeIf(s -> s.getEpicId() == id);
+        //то есть надо внутри эпиков пройтись еще и по их сабтаскам и удалить их?
+        for (Epic epic : epics.values()) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
+            }
         }
         epics.clear();
     }
 
-    public Epic getEpicById(int id) {
+    public Epic getEpicById(Integer id) {
         return epics.get(id);
     }
 
@@ -70,7 +68,7 @@ public class TaskManager {
         return epic;
     }
 
-    public void deleteEpicById(int id) {
+    public void deleteEpicById(Integer id) {
         Epic epic = epics.remove(id);
 
         if (epic != null) {
@@ -80,7 +78,7 @@ public class TaskManager {
         }
     }
 
-    private void updateEpicStatus(int epicId) {
+    private void updateEpicStatus(Integer epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return;
 
@@ -93,7 +91,7 @@ public class TaskManager {
         boolean allDone = true;
         boolean anyInProgress = false;
 
-        for (int subtaskId : subtaskIds) {
+        for (Integer subtaskId : subtaskIds) {
             Subtask subtask = subtasks.get(subtaskId);
             if (subtask == null) continue;
 
@@ -140,13 +138,13 @@ public class TaskManager {
         }
     }
 
-    public Subtask getSubtaskById(int id) {
+    public Subtask getSubtaskById(Integer id) {
         return subtasks.get(id);
     }
 
     public Subtask addSubtaskByEpic(Subtask subtask) {
 
-        int epicId = subtask.getEpicId();
+        Integer epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
             System.out.println("error! there is no epic for this task !"
@@ -165,14 +163,14 @@ public class TaskManager {
     }
 
     public void updateSubtask (Subtask updatedSubtask) {
-        int id = updatedSubtask.getId();
-        if (subtasks.containsKey(id)) {
-            subtasks.put(id, updatedSubtask);
+        // Integer id = updatedSubtask.getId(); - я думала так красивее
+        if (subtasks.containsKey(updatedSubtask.getId())) {
+            subtasks.put(updatedSubtask.getId(), updatedSubtask);
             updateEpicStatus(updatedSubtask.getEpicId());
         }
     }
 
-    public void deleteSubtaskById(int id) {
+    public void deleteSubtaskById(Integer id) {
         Subtask s = subtasks.remove(id);
         if (s != null) {
             Epic epic = epics.get(s.getEpicId());
@@ -183,7 +181,7 @@ public class TaskManager {
         }
     }
 
-    public List<Subtask> getSubtaskOfEpic(int epicId) {
+    public List<Subtask> getSubtaskOfEpic(Integer epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return new ArrayList<>();
 

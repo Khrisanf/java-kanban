@@ -1,10 +1,7 @@
-package app;
+package ru.java.kanban; //вот так что ли
 
-import app.model.Epic;
-import app.model.Subtask;
-import app.model.Task;
-import app.model.TaskStatus;
-import app.service.TaskManager;
+import ru.java.kanban.model.*;
+import ru.java.kanban.service.*;
 
 
 
@@ -21,7 +18,7 @@ public class Main {
         manager.addTask(task2);
 
         //create epic with 2 subtasks
-        Epic epic1 = new Epic("Moving out to another town", "Move to Tomsk", TaskStatus.NEW);
+        Epic epic1 = new Epic("Moving out to another town", "Move to Tomsk");
         manager.addEpic(epic1);
 
         Subtask subtask1 = new Subtask("Pack clothes", "Pack a bag", TaskStatus.NEW, epic1.getId());
@@ -30,7 +27,7 @@ public class Main {
         manager.addSubtaskByEpic(subtask2);
 
         //create epic with 1 subtask
-        Epic epic2 = new Epic("Session", "Pass deadlines", TaskStatus.NEW);
+        Epic epic2 = new Epic("Session", "Pass deadlines");
         manager.addEpic(epic2);
         Subtask subtask3 = new Subtask("Pass java", "Pass projects", TaskStatus.NEW, epic2.getId());
         manager.addSubtaskByEpic(subtask3);

@@ -1,0 +1,233 @@
+package ru.java.kanban.service;
+
+import ru.java.kanban.model.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class InMemoryTaskManager implements TaskManager {
+    private int nextId = 1;
+
+    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, Epic> epics = new HashMap<>();
+    private final Map<Integer, Subtask> subtasks = new HashMap<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
+
+
+
+    //All about Task
+    @Override
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
+    }
+
+    @Override
+    public void deleteAllTasks() {
+        tasks.clear();
+    }
+
+    @Override
+    public Task getTaskById(Integer id) {
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
+    }
+
+    @Override
+    public Task addTask(Task task) {
+        task.setId(nextId++);
+        tasks.put(task.getId(), task);
+        return task;
+    }
+
+    @Override
+    public void deleteTaskById(Integer id) {
+        tasks.remove(id);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        if (tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
+        }
+    }
+
+    //All about Epic
+    @Override
+    public List<Epic> getAllEpics() {
+        return new ArrayList<>(epics.values());
+    }
+
+    @Override
+    public void deleteAllEpics() {
+        //то есть надо внутри эпиков пройтись еще и по их сабтаскам и удалить их?
+        for (Epic epic : epics.values()) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
+            }
+        }
+        epics.clear();
+    }
+
+    @Override
+    public Epic getEpicById(Integer id) {
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
+    }
+
+    @Override
+    public Epic addEpic(Epic epic) {
+       epic.setId(nextId++);
+       epics.put(epic.getId(), epic);
+        return epic;
+    }
+
+    @Override
+    public void deleteEpicById(Integer id) {
+        Epic epic = epics.remove(id);
+
+        if (epic != null) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
+            }
+        }
+    }
+
+    private void updateEpicStatus(Integer epicId) {
+        Epic epic = epics.get(epicId);
+        if (epic == null) return;
+
+        List<Integer> subtaskIds = epic.getSubtaskIds();
+        if (subtaskIds.isEmpty()) {
+            epic.setStatus(TaskStatus.NEW);
+            return;
+        }
+
+        boolean allNew = true;
+        boolean allDone = true;
+
+        for (Integer subtaskId : subtaskIds) {
+            Subtask subtask = subtasks.get(subtaskId);
+            if (subtask == null) continue;
+
+            TaskStatus status = subtask.getStatus();
+            if (status != TaskStatus.NEW) {
+                allNew = false;
+            }
+            if (status != TaskStatus.DONE) {
+                allDone = false;
+            }
+        }
+
+        if (allNew) {
+            epic.setStatus(TaskStatus.NEW);
+        } else if (allDone) {
+            epic.setStatus(TaskStatus.DONE);
+        } else {
+            epic.setStatus(TaskStatus.IN_PROGRESS);
+        }
+    }
+
+
+    @Override
+    public void updateEpic(Epic updatedEpic) {
+        int id = updatedEpic.getId();
+        Epic existingEpic = epics.get(id);
+
+        if (existingEpic != null) {
+            existingEpic.setName(updatedEpic.getName());
+            existingEpic.setDescription(updatedEpic.getDescription());
+
+            updateEpicStatus(existingEpic.getId());
+        }
+    }
+
+
+    //All about Subtask
+    @Override
+    public List<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
+
+    @Override
+    public void deleteAllSubtasks() {
+        subtasks.clear();
+        for (Epic epic : epics.values()) {
+            epic.getSubtaskIds().clear();
+            updateEpicStatus(epic.getId());
+        }
+    }
+
+    @Override
+    public Subtask getSubtaskById(Integer id) {
+        Subtask subtask = subtasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
+    }
+
+    @Override
+    public Subtask addSubtaskByEpic(Subtask subtask) {
+
+        Integer epicId = subtask.getEpicId();
+        Epic epic = epics.get(epicId);
+        if (epic == null) {
+            System.out.println("error! there is no epic for this task !"
+                    + epicId + "not found.");
+            return null;
+        }
+
+        int id = nextId++;
+        subtask.setId(id);
+        subtasks.put(subtask.getId(), subtask);
+
+        epic.addSubtaskIds(id);
+        updateEpicStatus(epic.getId());
+
+        return subtask;
+    }
+
+    @Override
+    public void updateSubtask(Subtask updatedSubtask) {
+        if (subtasks.containsKey(updatedSubtask.getId())) {
+            subtasks.put(updatedSubtask.getId(), updatedSubtask);
+            updateEpicStatus(updatedSubtask.getEpicId());
+        }
+    }
+
+    @Override
+    public void deleteSubtaskById(Integer id) {
+        Subtask s = subtasks.remove(id);
+        if (s != null) {
+            Epic epic = epics.get(s.getEpicId());
+            if (epic != null) {
+                epic.getSubtaskIds().remove(Integer.valueOf(id));
+                updateEpicStatus(epic.getId());
+            }
+        }
+    }
+
+    @Override
+    public List<Subtask> getSubtaskOfEpic(Integer epicId) {
+        Epic epic = epics.get(epicId);
+        if (epic == null) return new ArrayList<>();
+
+        List<Subtask> result = new ArrayList<>();
+        for (Integer subtaskId : epic.getSubtaskIds()) {
+            Subtask s = subtasks.get(subtaskId);
+            if (s != null) {
+                result.add(s);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+
+}

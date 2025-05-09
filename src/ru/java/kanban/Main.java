@@ -9,7 +9,7 @@ import ru.java.kanban.service.*;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        TaskManager manager = Managers.getDefault();
 
         //common taks
         Task task1 = new Task( "Moving out", "Pack boxes", TaskStatus.NEW);
@@ -75,5 +75,10 @@ public class Main {
         manager.getAllEpics().forEach(System.out::println);
         System.out.println("Subtasks: ");
         manager.getAllSubtasks().forEach(System.out::println);
+
+        //print historia
+        System.out.println("\nHistory:");
+        manager.getHistory().forEach(System.out::println);
+
     }
 }

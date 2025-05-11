@@ -1,4 +1,4 @@
-package ru.java.kanban.service;
+package ru.java.kanban.service.history;
 
 import ru.java.kanban.model.Task;
 
@@ -11,14 +11,19 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (task == null) return;
-        history.add(task);
+        history.add(task.copy());
         if (history.size() > 10) {
-            history.removeFirst();
+            history.remove(0);
         }
     }
 
     @Override
     public List<Task> getHistory() {
         return new ArrayList<>(history);
+    }
+
+    @Override
+    public void remove(int id) {
+        history.removeIf(task -> task.getId().equals(id));
     }
 }

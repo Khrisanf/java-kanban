@@ -1,4 +1,4 @@
-package ru.java.kanban.service;
+package ru.java.kanban.service.task;
 
 import ru.java.kanban.model.Epic;
 import ru.java.kanban.model.Subtask;
@@ -40,7 +40,7 @@ public interface TaskManager {
 
     Subtask getSubtaskById(Integer id);
 
-    Subtask addSubtaskByEpic(Subtask subtask);
+    Subtask addSubtask(Subtask subtask);
 
     void updateSubtask(Subtask updatedSubtask);
 

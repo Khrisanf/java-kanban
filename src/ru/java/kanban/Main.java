@@ -1,9 +1,8 @@
-package ru.java.kanban; //вот так что ли
+package ru.java.kanban;
 
 import ru.java.kanban.model.*;
 import ru.java.kanban.service.*;
-
-
+import ru.java.kanban.service.task.TaskManager;
 
 
 public class Main {
@@ -23,14 +22,14 @@ public class Main {
 
         Subtask subtask1 = new Subtask("Pack clothes", "Pack a bag", TaskStatus.NEW, epic1.getId());
         Subtask subtask2 = new Subtask("Apartment rental", "Rent for some times", TaskStatus.NEW, epic1.getId());
-        manager.addSubtaskByEpic(subtask1);
-        manager.addSubtaskByEpic(subtask2);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
 
         //create epic with 1 subtask
         Epic epic2 = new Epic("Session", "Pass deadlines");
         manager.addEpic(epic2);
         Subtask subtask3 = new Subtask("Pass java", "Pass projects", TaskStatus.NEW, epic2.getId());
-        manager.addSubtaskByEpic(subtask3);
+        manager.addSubtask(subtask3);
 
         //print all tasks
         System.out.println("Common tasks: ");

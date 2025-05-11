@@ -46,6 +46,12 @@ public class Task {
         return status;
     }
 
+    public Task copy() {
+        Task copy = new Task(getName(), getDescription(), status);
+        copy.setId(this.id);
+        return copy;
+    }
+
     @Override
     public String toString() {
         return "Task{" +

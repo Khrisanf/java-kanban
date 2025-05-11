@@ -33,4 +33,13 @@ public class Epic extends Task {
                 '}';
     }
 
+    @Override
+    public Task copy() {
+        Epic copy = new Epic(getName(), getDescription());
+        copy.setId(this.getId());
+        copy.setStatus(getStatus());
+        copy.setSubtaskIds(new ArrayList<>(getSubtaskIds()));
+        return copy;
+    }
+
 }

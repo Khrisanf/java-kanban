@@ -1,0 +1,51 @@
+package ru.java.kanban.model;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class TaskTest {
+
+    @Test
+    void equals_shouldReturnTrueIfIdsAreEqual() {
+        Task t1 = new Task("A", "Desc", TaskStatus.NEW);
+        Task t2 = new Task("B", "Diff", TaskStatus.DONE);
+        t1.setId(1);
+        t2.setId(1);
+
+        assertEquals(t1, t2);
+    }
+
+    @Test
+    void hashCode_shouldBeEqualForSameId() {
+        Task t1 = new Task("X", "Y", TaskStatus.IN_PROGRESS);
+        Task t2 = new Task("Z", "W", TaskStatus.NEW);
+        t1.setId(99);
+        t2.setId(99);
+
+        assertEquals(t1.hashCode(), t2.hashCode());
+    }
+
+    @Test
+    void copy_shouldReturnEqualButIndependentTask() {
+        Task original = new Task("Title", "Details", TaskStatus.NEW);
+        original.setId(77);
+
+        Task copy = original.copy();
+
+        assertEquals(original, copy);
+        assertNotSame(original, copy);
+    }
+
+    @Test
+    void toString_shouldContainKeyFields() {
+        Task task = new Task("X", "Y", TaskStatus.NEW);
+        task.setId(10);
+        String result = task.toString();
+
+        assertTrue(result.contains("id=10"));
+        assertTrue(result.contains("name='X'"));
+        assertTrue(result.contains("description='Y'"));
+        assertTrue(result.contains("status=NEW"));
+    }
+}

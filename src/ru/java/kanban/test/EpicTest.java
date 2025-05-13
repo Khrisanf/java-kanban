@@ -1,4 +1,4 @@
-package ru.java.kanban.model;
+import ru.java.kanban.main.model.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EpicTest {
 
     @Test
-    void equals_shouldReturnTrueForSameId() {
+    void equals_returnTrue_sameId() {
         Epic epic1 = new Epic("Epic 1", "desc");
         epic1.setId(1);
         Epic epic2 = new Epic("Epic 2", "different desc");
@@ -17,7 +17,18 @@ public class EpicTest {
     }
 
     @Test
-    void addSubtaskId_shouldAddIdToList() {
+    void addSubtaskId_notAddIfEqualsEpicId() {
+        Epic epic = new Epic("Epic", "desc");
+        epic.setId(100);
+        epic.addSubtaskIds(100);
+
+        assertFalse(epic.getSubtaskIds().contains(100));
+    }
+
+
+    @Test
+    //сделала сам тест и в методе самого эпика проверяю дубли
+    void addSubtaskId_addIdToList() {
         Epic epic = new Epic("Epic", "desc");
         epic.addSubtaskIds(42);
 
@@ -25,7 +36,7 @@ public class EpicTest {
     }
 
     @Test
-    void toString_shouldContainEpicNameAndId() {
+    void toString_containEpicNameAndId() {
         Epic epic = new Epic("Test Epic", "desc");
         epic.setId(5);
 

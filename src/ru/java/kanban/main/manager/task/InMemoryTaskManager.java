@@ -1,8 +1,7 @@
-package ru.java.kanban.service.task;
+package ru.java.kanban.main. manager. task;
 
-import ru.java.kanban.model.*;
-import ru.java.kanban.service.Managers;
-import ru.java.kanban.service.history.HistoryManager;
+import ru.java.kanban.main.model.*;
+import ru.java.kanban.main.manager.history.HistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -227,7 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Subtask> getSubtaskOfEpic(Integer epicId) {
+    public List<Subtask> getSubtasksOfEpic(Integer epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return new ArrayList<>();
 

@@ -1,8 +1,8 @@
-package ru.java.kanban.service.task;
+package ru.java.kanban.main.manager.task;
 
-import ru.java.kanban.model.Epic;
-import ru.java.kanban.model.Subtask;
-import ru.java.kanban.model.Task;
+import ru.java.kanban.main.model.Epic;
+import ru.java.kanban.main.model.Subtask;
+import ru.java.kanban.main.model.Task;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public interface TaskManager {
 
     void deleteSubtaskById(Integer id);
 
-    List<Subtask> getSubtaskOfEpic(Integer epicId);
+    List<Subtask> getSubtasksOfEpic(Integer epicId);
 
     List<Task> getHistory();
 }

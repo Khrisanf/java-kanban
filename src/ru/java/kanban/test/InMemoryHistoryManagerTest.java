@@ -1,9 +1,8 @@
-package ru.java.kanban.service.history;
-
 import org.junit.jupiter.api.Test;
-import ru.java.kanban.model.*;
-import ru.java.kanban.service.*;
-import ru.java.kanban.service.task.TaskManager;
+import ru.java.kanban.main.model.*;
+import ru.java.kanban.main.manager.history.*;
+import ru.java.kanban.main.manager.task.*;
+import ru.java.kanban.main.manager.Managers;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryHistoryManagerTest {
 
     @Test
-    void addTask_shouldAppearInHistory_ifNotNull() {
+    void addTask_appearInHistory_ifNotNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
         task.setId(1);
@@ -25,7 +24,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTask_shouldIgnore_ifNull() {
+    void addTask_ignore_ifNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         historyManager.add(null);
 
@@ -34,7 +33,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addMoreThanTenTasks_shouldRemoveOldest_firstInFirstOut() {
+    void addMoreThanTenTasks_fIfO() {
         HistoryManager historyManager = new InMemoryHistoryManager();
 
         for (int i = 1; i <= 12; i++) {
@@ -50,7 +49,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void getHistory_shouldReturnIndependentCopy() {
+    void getHistory_returnIndependentCopy() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
         task.setId(1);
@@ -64,7 +63,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTask_shouldStoreImmutableSnapshot_notReference() {
+    void addTask_storeImmutableSnapshot_notReference() {
         TaskManager manager = Managers.getDefault();
         Task task = new Task("Original", "Desc", TaskStatus.NEW);
         manager.addTask(task);

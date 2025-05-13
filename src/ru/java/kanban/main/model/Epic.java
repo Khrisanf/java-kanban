@@ -1,4 +1,4 @@
-package ru.java.kanban.model;
+package ru.java.kanban.main.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,9 @@ public class Epic extends Task {
     }
 
     public void addSubtaskIds(int subtaskId) {
-        subtaskIds.add(subtaskId);
+        if (subtaskId != this.getId()) {
+            subtaskIds.add(subtaskId);
+        }
     }
 
     public List<Integer> getSubtaskIds() {

@@ -1,9 +1,9 @@
-package ru.java.kanban.service.task;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import ru.java.kanban.model.*;
-import ru.java.kanban.service.history.InMemoryHistoryManager;
+
+import ru.java.kanban.main.model.*;
+import ru.java.kanban.main.manager.history.*;
+import ru.java.kanban.main.manager.task.*;
 
 import java.util.List;
 
@@ -12,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InMemoryTaskManagerTest {
 
     private final TaskManager manager;
-    // убрала три поля, но почему лучше было их убрать?
-    // теперь к каждому тесту нужно всегда заново создавать объекты
-    // да, это given-then, но теперь надо больше писать
 
     public InMemoryTaskManagerTest() {
         this.manager = new InMemoryTaskManager(new InMemoryHistoryManager());
@@ -162,7 +159,7 @@ public class InMemoryTaskManagerTest {
         void getSubtaskOfEpic_returnsSubtasks_ifExist() {
             Epic epic = manager.addEpic(new Epic("Epic", "With subtasks"));
             Subtask subtask = manager.addSubtask(new Subtask("S", "D", TaskStatus.NEW, epic.getId()));
-            List<Subtask> subtasks = manager.getSubtaskOfEpic(epic.getId());
+            List<Subtask> subtasks = manager.getSubtasksOfEpic(epic.getId());
             assertEquals(1, subtasks.size());
             assertTrue(subtasks.contains(subtask));
         }
@@ -170,7 +167,7 @@ public class InMemoryTaskManagerTest {
         @Test
         void getSubtaskOfEpic_returnsEmpty_ifNoneExist() {
             Epic epic = manager.addEpic(new Epic("Empty", "No subtasks"));
-            List<Subtask> subtasks = manager.getSubtaskOfEpic(epic.getId());
+            List<Subtask> subtasks = manager.getSubtasksOfEpic(epic.getId());
             assertTrue(subtasks.isEmpty());
         }
 

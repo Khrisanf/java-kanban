@@ -1,8 +1,8 @@
-package ru.java.kanban;
+package ru.java.kanban.main;
 
-import ru.java.kanban.model.*;
-import ru.java.kanban.service.*;
-import ru.java.kanban.service.task.TaskManager;
+import ru.java.kanban.main.manager.Managers;
+import ru.java.kanban.main.model.*;
+import ru.java.kanban.main.manager.task.*;
 
 
 public class Main {

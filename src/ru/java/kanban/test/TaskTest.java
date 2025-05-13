@@ -1,13 +1,11 @@
-package ru.java.kanban.model;
-
+import ru.java.kanban.main.model.*;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
 
     @Test
-    void equals_shouldReturnTrueIfIdsAreEqual() {
+    void equals_returnTrueIfIdsAreEqual() {
         Task t1 = new Task("A", "Desc", TaskStatus.NEW);
         Task t2 = new Task("B", "Diff", TaskStatus.DONE);
         t1.setId(1);
@@ -17,7 +15,7 @@ public class TaskTest {
     }
 
     @Test
-    void hashCode_shouldBeEqualForSameId() {
+    void hashCode_beEqualForSameId() {
         Task t1 = new Task("X", "Y", TaskStatus.IN_PROGRESS);
         Task t2 = new Task("Z", "W", TaskStatus.NEW);
         t1.setId(99);
@@ -27,7 +25,7 @@ public class TaskTest {
     }
 
     @Test
-    void copy_shouldReturnEqualButIndependentTask() {
+    void copy_returnEqualButIndependentTask() {
         Task original = new Task("Title", "Details", TaskStatus.NEW);
         original.setId(77);
 
@@ -38,7 +36,7 @@ public class TaskTest {
     }
 
     @Test
-    void toString_shouldContainKeyFields() {
+    void toString_containKeyFields() {
         Task task = new Task("X", "Y", TaskStatus.NEW);
         task.setId(10);
         String result = task.toString();

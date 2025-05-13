@@ -1,4 +1,7 @@
-import ru.java.kanban.main.model.*;
+package ru.java.kanban;
+
+import ru.java.kanban.main.model.Task;
+import ru.java.kanban.main.model.TaskStatus;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

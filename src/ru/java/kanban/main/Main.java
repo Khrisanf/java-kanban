@@ -1,9 +1,11 @@
 package ru.java.kanban.main;
 
 import ru.java.kanban.main.manager.Managers;
-import ru.java.kanban.main.model.*;
-import ru.java.kanban.main.manager.task.*;
-
+import ru.java.kanban.main.manager.task.TaskManager;
+import ru.java.kanban.main.model.Epic;
+import ru.java.kanban.main.model.Subtask;
+import ru.java.kanban.main.model.Task;
+import ru.java.kanban.main.model.TaskStatus;
 
 public class Main {
 

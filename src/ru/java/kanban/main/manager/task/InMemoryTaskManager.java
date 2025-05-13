@@ -1,6 +1,9 @@
-package ru.java.kanban.main. manager. task;
+package ru.java.kanban.main.manager.task;
 
-import ru.java.kanban.main.model.*;
+import ru.java.kanban.main.model.Epic;
+import ru.java.kanban.main.model.Subtask;
+import ru.java.kanban.main.model.Task;
+import ru.java.kanban.main.model.TaskStatus;
 import ru.java.kanban.main.manager.history.HistoryManager;
 
 import java.util.ArrayList;

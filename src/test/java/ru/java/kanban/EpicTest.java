@@ -1,7 +1,7 @@
-import ru.java.kanban.main.model.*;
-
+package ru.java.kanban;
+// надеюсь вот теперь будет правильно
+import ru.java.kanban.main.model.Epic;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
@@ -27,9 +27,9 @@ public class EpicTest {
 
 
     @Test
-    //сделала сам тест и в методе самого эпика проверяю дубли
     void addSubtaskId_addIdToList() {
         Epic epic = new Epic("Epic", "desc");
+        epic.setId(1);
         epic.addSubtaskIds(42);
 
         assertTrue(epic.getSubtaskIds().contains(42));

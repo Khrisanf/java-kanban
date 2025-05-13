@@ -1,7 +1,11 @@
+package ru.java.kanban;
+
+import ru.java.kanban.main.manager.history.HistoryManager;
+import ru.java.kanban.main.manager.history.InMemoryHistoryManager;
+import ru.java.kanban.main.manager.task.TaskManager;
+import ru.java.kanban.main.model.Task;
+import ru.java.kanban.main.model.TaskStatus;
 import org.junit.jupiter.api.Test;
-import ru.java.kanban.main.model.*;
-import ru.java.kanban.main.manager.history.*;
-import ru.java.kanban.main.manager.task.*;
 import ru.java.kanban.main.manager.Managers;
 
 import java.util.List;
@@ -11,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryHistoryManagerTest {
 
     @Test
-    void addTask_appearInHistory_ifNotNull() {
+    void add_appearInHistory_ifNotNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
         task.setId(1);
@@ -24,7 +28,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTask_ignore_ifNull() {
+    void add_ignore_ifNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         historyManager.add(null);
 
@@ -63,7 +67,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTask_storeImmutableSnapshot_notReference() {
+    void add_storeImmutableSnapshot_notReference() {
         TaskManager manager = Managers.getDefault();
         Task task = new Task("Original", "Desc", TaskStatus.NEW);
         manager.addTask(task);

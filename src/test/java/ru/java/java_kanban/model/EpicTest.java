@@ -1,17 +1,12 @@
-package ru.java_kanban.model;
-// кажется я поняла
-// структура такая: src/test/java/ru/app
-// app/history
-// app/model
-// app/task
-import main.java.ru.java_kanban.model.Epic;
+package ru.java.java_kanban.model;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
 
     @Test
-    void equals_returnTrue_sameId() {
+    public void equals_returnTrue_sameId() {
         Epic epic1 = new Epic("Epic 1", "desc");
         epic1.setId(1);
         Epic epic2 = new Epic("Epic 2", "different desc");
@@ -21,7 +16,7 @@ public class EpicTest {
     }
 
     @Test
-    void addSubtaskId_notAddIfEqualsEpicId() {
+    public void addSubtaskId_notAddIfEqualsEpicId() {
         Epic epic = new Epic("Epic", "desc");
         epic.setId(100);
         epic.addSubtaskIds(100);
@@ -31,7 +26,7 @@ public class EpicTest {
 
 
     @Test
-    void addSubtaskId_addIdToList() {
+    public void addSubtaskId_addIdToList() {
         Epic epic = new Epic("Epic", "desc");
         epic.setId(1);
         epic.addSubtaskIds(42);
@@ -40,7 +35,7 @@ public class EpicTest {
     }
 
     @Test
-    void toString_containEpicNameAndId() {
+    public void toString_containEpicNameAndId() {
         Epic epic = new Epic("Test Epic", "desc");
         epic.setId(5);
 

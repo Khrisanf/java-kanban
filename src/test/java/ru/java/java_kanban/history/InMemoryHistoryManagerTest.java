@@ -1,21 +1,21 @@
-package ru.java_kanban.history;
+package ru.java.java_kanban.history;
 
-import main.java.ru.java_kanban.manager.history.HistoryManager;
-import main.java.ru.java_kanban.manager.history.InMemoryHistoryManager;
-import main.java.ru.java_kanban.manager.task.TaskManager;
-import main.java.ru.java_kanban.model.Task;
-import main.java.ru.java_kanban.model.TaskStatus;
+
 import org.junit.jupiter.api.Test;
-import main.java.ru.java_kanban.manager.Managers;
+import static org.junit.jupiter.api.Assertions.*;
+import ru.java.java_kanban.manager.Managers;
+import ru.java.java_kanban.manager.history.HistoryManager;
+import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
+import ru.java.java_kanban.manager.task.TaskManager;
+import ru.java.java_kanban.model.Task;
+import ru.java.java_kanban.model.TaskStatus;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class InMemoryHistoryManagerTest {
+public class InMemoryHistoryManagerTest {
 
     @Test
-    void add_appearInHistory_ifNotNull() {
+    public void add_appearInHistory_ifNotNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
         task.setId(1);
@@ -28,7 +28,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void add_ignore_ifNull() {
+    public void add_ignore_ifNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         historyManager.add(null);
 
@@ -37,7 +37,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addMoreThanTenTasks_fIfO() {
+    public void addMoreThanTenTasks_fIfO() {
         HistoryManager historyManager = new InMemoryHistoryManager();
 
         for (int i = 1; i <= 12; i++) {
@@ -53,7 +53,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void getHistory_returnIndependentCopy() {
+    public void getHistory_returnIndependentCopy() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
         task.setId(1);
@@ -67,7 +67,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void add_storeImmutableSnapshot_notReference() {
+    public void add_storeImmutableSnapshot_notReference() {
         TaskManager manager = Managers.getDefault();
         Task task = new Task("Original", "Desc", TaskStatus.NEW);
         manager.addTask(task);

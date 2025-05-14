@@ -1,6 +1,6 @@
-package main.java.ru.java_kanban.manager.history;
+package ru.java.java_kanban.manager.history;
 
-import main.java.ru.java_kanban.model.Task;
+import ru.java.java_kanban.model.Task;
 
 import java.util.List;
 import java.util.ArrayList;

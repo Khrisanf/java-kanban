@@ -1,14 +1,16 @@
-package ru.java_kanban.task;
+package ru.java.java_kanban.task;
 
-import main.java.ru.java_kanban.manager.history.InMemoryHistoryManager;
-import main.java.ru.java_kanban.manager.task.InMemoryTaskManager;
-import main.java.ru.java_kanban.manager.task.TaskManager;
-import main.java.ru.java_kanban.model.Epic;
-import main.java.ru.java_kanban.model.Subtask;
-import main.java.ru.java_kanban.model.Task;
-import main.java.ru.java_kanban.model.TaskStatus;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
+import ru.java.java_kanban.manager.task.InMemoryTaskManager;
+import ru.java.java_kanban.manager.task.TaskManager;
+import ru.java.java_kanban.model.Epic;
+import ru.java.java_kanban.model.Subtask;
+import ru.java.java_kanban.model.Task;
+import ru.java.java_kanban.model.TaskStatus;
 
 import java.util.List;
 

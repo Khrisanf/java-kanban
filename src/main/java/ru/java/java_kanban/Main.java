@@ -1,19 +1,15 @@
-package main.java.ru.java_kanban;
-// src/main/java/ru/app/Main.java
-// это по структуре Maven/Gradle я так понимаю?
-import main.java.ru.java_kanban.manager.Managers;
-import main.java.ru.java_kanban.manager.task.TaskManager;
-import main.java.ru.java_kanban.model.Epic;
-import main.java.ru.java_kanban.model.Subtask;
-import main.java.ru.java_kanban.model.Task;
-import main.java.ru.java_kanban.model.TaskStatus;
+package ru.java.java_kanban;
+import ru.java.java_kanban.manager.history.*;
+import ru.java.java_kanban.manager.task.*;
+import ru.java.java_kanban.model.*;
+import ru.java.java_kanban.manager.Managers;
 
 public class Main {
 
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
 
-        //common taks
+        //common task
         Task task1 = new Task( "Moving out", "Pack boxes", TaskStatus.NEW);
         Task task2 = new Task( "Studying", "Pass the module about Java", TaskStatus.NEW);
         manager.addTask(task1);
@@ -78,7 +74,7 @@ public class Main {
         System.out.println("Subtasks: ");
         manager.getAllSubtasks().forEach(System.out::println);
 
-        //print historia
+        //print history
         System.out.println("\nHistory:");
         manager.getHistory().forEach(System.out::println);
 

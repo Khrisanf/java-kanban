@@ -1,4 +1,4 @@
-package main.java.ru.java_kanban.model;
+package ru.java.java_kanban.model;
 
 import java.util.Objects;
 

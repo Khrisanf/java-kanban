@@ -1,9 +1,6 @@
-package ru.java_kanban.model;
+package ru.java.java_kanban.model;
 
-import main.java.ru.java_kanban.model.Subtask;
-import main.java.ru.java_kanban.model.TaskStatus;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskTest {

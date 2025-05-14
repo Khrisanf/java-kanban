@@ -2,32 +2,43 @@
 
 ## 📌 Description
 
-This is a simple task tracker application written in Java as part of a learning project.  
-It supports basic Kanban-style task management with Tasks, Epics, and Subtasks.
+A Java-based Kanban-style task tracker designed for educational purposes.  
+Supports structured management of tasks, epics, and subtasks with history tracking and modular architecture.
 
-## 🛠 Features
+## 🧩 Key Features
 
-- Create, view, update, and delete:
-    - ✅ Regular Tasks
-    - 🧩 Epics (tasks composed of subtasks)
-    - 🔹 Subtasks (linked to Epics)
-- Automatic Epic status calculation based on its Subtasks.
-- Unique ID generation for all tasks.
-- In-memory storage using `HashMap`.
-- Manual testing of logic in `Main.java`.
+- 👤 CRUD operations for:
+  - ✅ **Tasks**
+  - 🧩 **Epics** — container tasks that include subtasks
+  - 🔹 **Subtasks** — associated with epics
+- 🧠 **Automatic Epic status updates** based on subtasks
+- 🆔 **Unique ID** generation for all task types
+- 🧾 **View history** of the last 10 accessed tasks
+- 🧪 **Unit-tested logic** with JUnit 5
+- 💾 **In-memory storage** using HashMaps
+- 🧱 **Modular architecture** with interfaces:
+  - `TaskManager`, `HistoryManager` for flexibility and testability
 
-## 🚀 How to Run
+## 🛠 Technologies Used
 
-1. Open the project in IntelliJ IDEA or any Java IDE.
-2. Run `Main.java`.
-3. View results in the console.
+- Java 23
+- Maven (Project Management + Build)
+- JUnit 5 (Testing)
 
-## ✅ Manual Testing Includes
+## 🧪 Test Coverage
 
-- Adding Tasks, Epics, and Subtasks
-- Changing task and subtask statuses
-- Verifying automatic status updates for Epics
-- Deleting tasks and epics
+Tested classes include:
+
+- `Task`, `Epic`, `Subtask` models
+- `InMemoryTaskManager` — task management logic
+- `InMemoryHistoryManager` — fixed-size task access history
+- Edge cases: nulls, invalid IDs, reference independence, etc.
+
 
 Made with ☕ and Java :)
+
+Run tests using:
+```bash
+mvn test
+
 

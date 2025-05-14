@@ -1,8 +1,10 @@
-package main.java.ru.java_kanban.manager.task;
+package ru.java.java_kanban.manager.task;
 
-import main.java.ru.java_kanban.model.Epic;
-import main.java.ru.java_kanban.model.Subtask;
-import main.java.ru.java_kanban.model.Task;
+
+
+import ru.java.java_kanban.model.Epic;
+import ru.java.java_kanban.model.Subtask;
+import ru.java.java_kanban.model.Task;
 
 import java.util.List;
 

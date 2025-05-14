@@ -1,11 +1,12 @@
-package ru.java.kanban.main;
-
-import ru.java.kanban.main.manager.Managers;
-import ru.java.kanban.main.manager.task.TaskManager;
-import ru.java.kanban.main.model.Epic;
-import ru.java.kanban.main.model.Subtask;
-import ru.java.kanban.main.model.Task;
-import ru.java.kanban.main.model.TaskStatus;
+package main.java.ru.java_kanban;
+// src/main/java/ru/app/Main.java
+// это по структуре Maven/Gradle я так понимаю?
+import main.java.ru.java_kanban.manager.Managers;
+import main.java.ru.java_kanban.manager.task.TaskManager;
+import main.java.ru.java_kanban.model.Epic;
+import main.java.ru.java_kanban.model.Subtask;
+import main.java.ru.java_kanban.model.Task;
+import main.java.ru.java_kanban.model.TaskStatus;
 
 public class Main {
 

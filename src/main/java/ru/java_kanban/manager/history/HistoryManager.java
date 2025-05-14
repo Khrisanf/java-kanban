@@ -1,6 +1,6 @@
-package ru.java.kanban.main.manager.history;
+package main.java.ru.java_kanban.manager.history;
 
-import ru.java.kanban.main.model.Task;
+import main.java.ru.java_kanban.model.Task;
 import java.util.List;
 
 public interface HistoryManager {

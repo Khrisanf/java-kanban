@@ -1,12 +1,12 @@
-package ru.java.kanban;
+package ru.java_kanban.history;
 
-import ru.java.kanban.main.manager.history.HistoryManager;
-import ru.java.kanban.main.manager.history.InMemoryHistoryManager;
-import ru.java.kanban.main.manager.task.TaskManager;
-import ru.java.kanban.main.model.Task;
-import ru.java.kanban.main.model.TaskStatus;
+import main.java.ru.java_kanban.manager.history.HistoryManager;
+import main.java.ru.java_kanban.manager.history.InMemoryHistoryManager;
+import main.java.ru.java_kanban.manager.task.TaskManager;
+import main.java.ru.java_kanban.model.Task;
+import main.java.ru.java_kanban.model.TaskStatus;
 import org.junit.jupiter.api.Test;
-import ru.java.kanban.main.manager.Managers;
+import main.java.ru.java_kanban.manager.Managers;
 
 import java.util.List;
 

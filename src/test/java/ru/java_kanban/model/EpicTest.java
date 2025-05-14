@@ -1,6 +1,10 @@
-package ru.java.kanban;
-// надеюсь вот теперь будет правильно
-import ru.java.kanban.main.model.Epic;
+package ru.java_kanban.model;
+// кажется я поняла
+// структура такая: src/test/java/ru/app
+// app/history
+// app/model
+// app/task
+import main.java.ru.java_kanban.model.Epic;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

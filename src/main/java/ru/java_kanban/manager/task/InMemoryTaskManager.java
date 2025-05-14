@@ -1,10 +1,10 @@
-package ru.java.kanban.main.manager.task;
+package main.java.ru.java_kanban.manager.task;
 
-import ru.java.kanban.main.model.Epic;
-import ru.java.kanban.main.model.Subtask;
-import ru.java.kanban.main.model.Task;
-import ru.java.kanban.main.model.TaskStatus;
-import ru.java.kanban.main.manager.history.HistoryManager;
+import main.java.ru.java_kanban.model.Epic;
+import main.java.ru.java_kanban.model.Subtask;
+import main.java.ru.java_kanban.model.Task;
+import main.java.ru.java_kanban.model.TaskStatus;
+import main.java.ru.java_kanban.manager.history.HistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;

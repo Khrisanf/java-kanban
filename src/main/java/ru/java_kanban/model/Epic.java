@@ -1,4 +1,4 @@
-package ru.java.kanban.main.model;
+package main.java.ru.java_kanban.model;
 
 import java.util.ArrayList;
 import java.util.List;

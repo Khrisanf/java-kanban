@@ -26,10 +26,21 @@
 
     <build>
         <plugins>
+            <!-- Тесты (уже есть, но оставляем) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.0</version>
+            </plugin>
+
+            <!-- Запуск main через Maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version> <!-- меняем на актуальную -->
+                <configuration>
+                    <mainClass>ru.java.java_kanban.Main</mainClass><!-- замени на свой -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

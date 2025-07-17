@@ -135,6 +135,21 @@ public class InMemoryTaskManagerTest {
         void deleteEpicById_doesNotThrow_ifIdMissing() {
             assertDoesNotThrow(() -> manager.deleteEpicById(1000));
         }
+
+        @Test
+        void setEpicId_manuallyBreaksEpicConsistency_ifChangedDirectly() {
+            Epic epic = manager.addEpic(new Epic("Epic", "Desc"));
+            Subtask subtask = manager.addSubtask(new Subtask("Sub", "D", TaskStatus.NEW, epic.getId()));
+
+            // Меняем epicId напрямую
+            subtask.setEpicId(999);
+            manager.updateSubtask(subtask);
+
+            Epic updated = manager.getEpicById(epic.getId());
+            assertTrue(updated.getSubtaskIds().contains(subtask.getId()),
+                    "Manager does not check if epicId is correct when updating a subtask");
+        }
+
     }
 
     //SUBTASK TESTS
@@ -229,3 +244,4 @@ public class InMemoryTaskManagerTest {
         }
     }
 }
+

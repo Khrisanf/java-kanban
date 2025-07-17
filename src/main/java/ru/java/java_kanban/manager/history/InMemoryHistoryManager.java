@@ -2,28 +2,68 @@ package ru.java.java_kanban.manager.history;
 
 import ru.java.java_kanban.model.Task;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> history = new ArrayList<>();
 
-    @Override
-    public void add(Task task) {
-        if (task == null) return;
-        history.add(task.copy());
-        if (history.size() > 10) {
-            history.remove(0);
+    private Node head;
+    private Node tail;
+    private final Map<Integer, Node> historyMap = new HashMap<>();
+
+    private void linkLast(Task task) {
+        Node oldTail = tail;
+        Node newNode = new Node(oldTail, task, null);
+        tail = newNode;
+        if (oldTail == null) {
+            head = newNode;
+        } else {
+            oldTail.next = newNode;
+        }
+        historyMap.put(task.getId(), newNode);
+    }
+
+    private void removeNode(Node node) {
+        if (node == null) return;
+
+        Node prev = node.prev;
+        Node next = node.next;
+
+        if (prev != null) {
+            prev.next = next;
+        } else {
+            head = next;
+        }
+
+        if (next != null) {
+            next.prev = prev;
+        } else {
+            tail = prev;
         }
     }
 
     @Override
-    public List<Task> getHistory() {
-        return new ArrayList<>(history);
+    public void add(Task task) {
+        if (task == null) return;
+        if (historyMap.containsKey(task.getId())) {
+            removeNode(historyMap.get(task.getId()));
+        }
+        linkLast(task);
+    }
+
+    @Override
+    public List<Task> getHistoryMap() {
+        List<Task> history = new ArrayList<>();
+        Node current = head;
+        while (current != null) {
+            history.add(current.task);
+            current = current.next;
+        }
+        return history;
     }
 
     @Override
     public void remove(int id) {
-        history.removeIf(task -> task.getId().equals(id));
+        Node node = historyMap.remove(id);
+        removeNode(node);
     }
 }

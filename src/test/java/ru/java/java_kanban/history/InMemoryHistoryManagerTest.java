@@ -15,6 +15,101 @@ import java.util.List;
 public class InMemoryHistoryManagerTest {
 
     @Test
+    public void add_moveTaskToEnd_ifAlreadyInHistory() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task1.setId(1);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task1);
+
+        List<Task> history = historyManager.getHistoryMap();
+        assertEquals(2, history.size());
+        assertEquals(task2, history.get(0));
+        assertEquals(task1, history.get(1));
+    }
+
+    @Test
+    public void remove_deleteTaskFromHistory_ifExists() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task1.setId(1);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistoryMap();
+        assertEquals(1, history.size());
+        assertEquals(task2, history.get(0));
+    }
+
+    @Test
+    public void remove_doNothing_ifHistoryEmpty() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        assertDoesNotThrow(() -> historyManager.remove(999));
+        assertTrue(historyManager.getHistoryMap().isEmpty());
+    }
+
+    @Test
+    public void getHistory_returnEmptyList_ifNoTasksViewed() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        assertTrue(historyManager.getHistoryMap().isEmpty());
+    }
+
+    @Test
+    public void add_setHeadAndTail_ifHistoryEmpty() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task.setId(1);
+
+        historyManager.add(task);
+
+        List<Task> history = historyManager.getHistoryMap();
+        assertEquals(1, history.size());
+        assertEquals(task, history.get(0));
+    }
+
+    @Test
+    public void remove_updateHead_ifFirstTaskRemoved() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task1.setId(1);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistoryMap();
+        assertEquals(1, history.size());
+        assertEquals(task2, history.get(0));
+    }
+
+    @Test
+    public void remove_updateTail_ifLastTaskRemoved() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task1.setId(1);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistoryMap();
+        assertEquals(1, history.size());
+        assertEquals(task1, history.get(0));
+    }
+
+    @Test
     public void add_appearInHistory_ifNotNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
@@ -22,9 +117,21 @@ public class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        List<Task> history = historyManager.getHistory();
+        List<Task> history = historyManager.getHistoryMap();
         assertEquals(1, history.size());
         assertEquals(task, history.get(0));
+    }
+
+    @Test
+    public void remove_clearHistory_ifLastTaskRemoved() {
+        HistoryManager historyManager = new InMemoryHistoryManager();
+        Task task = new Task("Task 1", "Desc", TaskStatus.NEW);
+        task.setId(1);
+
+        historyManager.add(task);
+        historyManager.remove(1);
+
+        assertTrue(historyManager.getHistoryMap().isEmpty());
     }
 
     @Test
@@ -32,53 +139,8 @@ public class InMemoryHistoryManagerTest {
         HistoryManager historyManager = new InMemoryHistoryManager();
         historyManager.add(null);
 
-        List<Task> history = historyManager.getHistory();
+        List<Task> history = historyManager.getHistoryMap();
         assertTrue(history.isEmpty());
     }
-
-    @Test
-    public void addMoreThanTenTasks_fIfO() {
-        HistoryManager historyManager = new InMemoryHistoryManager();
-
-        for (int i = 1; i <= 12; i++) {
-            Task t = new Task("Task " + i, "Description", TaskStatus.NEW);
-            t.setId(i);
-            historyManager.add(t);
-        }
-
-        List<Task> history = historyManager.getHistory();
-        assertEquals(10, history.size());
-        assertEquals("Task 3", history.get(0).getName());
-        assertEquals("Task 12", history.get(9).getName());
-    }
-
-    @Test
-    public void getHistory_returnIndependentCopy() {
-        HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
-        task.setId(1);
-        historyManager.add(task);
-
-        List<Task> copy = historyManager.getHistory();
-        copy.clear();
-
-        List<Task> original = historyManager.getHistory();
-        assertEquals(1, original.size());
-    }
-
-    @Test
-    public void add_storeImmutableSnapshot_notReference() {
-        TaskManager manager = Managers.getDefault();
-        Task task = new Task("Original", "Desc", TaskStatus.NEW);
-        manager.addTask(task);
-        Task originalCopy = task.copy();
-
-        manager.getTaskById(task.getId());
-        task.setStatus(TaskStatus.DONE);
-
-        Task fromHistory = manager.getHistory().get(0);
-
-        assertEquals(originalCopy.getStatus(), fromHistory.getStatus(),
-                "History should contain a snapshot, not a live reference");
-    }
 }
+

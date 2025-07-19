@@ -3,10 +3,9 @@ package ru.java.java_kanban.history;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import ru.java.java_kanban.manager.Managers;
+
 import ru.java.java_kanban.manager.history.HistoryManager;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
-import ru.java.java_kanban.manager.task.TaskManager;
 import ru.java.java_kanban.model.Task;
 import ru.java.java_kanban.model.TaskStatus;
 
@@ -26,7 +25,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.add(task1);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(2, history.size());
         assertEquals(task2, history.get(0));
         assertEquals(task1, history.get(1));
@@ -44,7 +43,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.remove(1);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size());
         assertEquals(task2, history.get(0));
     }
@@ -53,13 +52,13 @@ public class InMemoryHistoryManagerTest {
     public void remove_doNothing_ifHistoryEmpty() {
         HistoryManager historyManager = new InMemoryHistoryManager();
         assertDoesNotThrow(() -> historyManager.remove(999));
-        assertTrue(historyManager.getHistoryMap().isEmpty());
+        assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
     public void getHistory_returnEmptyList_ifNoTasksViewed() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        assertTrue(historyManager.getHistoryMap().isEmpty());
+        assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
@@ -70,7 +69,7 @@ public class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size());
         assertEquals(task, history.get(0));
     }
@@ -87,7 +86,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.remove(1);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size());
         assertEquals(task2, history.get(0));
     }
@@ -104,7 +103,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.remove(2);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size());
         assertEquals(task1, history.get(0));
     }
@@ -117,7 +116,7 @@ public class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size());
         assertEquals(task, history.get(0));
     }
@@ -131,7 +130,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(task);
         historyManager.remove(1);
 
-        assertTrue(historyManager.getHistoryMap().isEmpty());
+        assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
@@ -139,7 +138,7 @@ public class InMemoryHistoryManagerTest {
         HistoryManager historyManager = new InMemoryHistoryManager();
         historyManager.add(null);
 
-        List<Task> history = historyManager.getHistoryMap();
+        List<Task> history = historyManager.getHistory();
         assertTrue(history.isEmpty());
     }
 }

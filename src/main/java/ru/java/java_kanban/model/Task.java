@@ -4,12 +4,14 @@ import java.util.Objects;
 
 public class Task {
     private Integer id;
+    protected TaskType type;
     private String name;
     private String description;
     private TaskStatus status;
 
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
+        this.type = TaskType.TASK;
         this.description = description;
         this.status = status;
     }
@@ -20,6 +22,10 @@ public class Task {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public String getName() {
@@ -46,11 +52,12 @@ public class Task {
         return status;
     }
 
+/* нужен он - не нужен, пока не понимаю
     public Task copy() {
         Task copy = new Task(getName(), getDescription(), status);
         copy.setId(this.id);
         return copy;
-    }
+    }*/
 
     @Override
     public String toString() {

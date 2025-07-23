@@ -8,20 +8,17 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
+        this.type = TaskType.EPIC;
     }
 
     public void addSubtaskIds(int subtaskId) {
-        if (subtaskId != this.getId()) {
+        if (!subtaskIds.contains(subtaskId)) {
             subtaskIds.add(subtaskId);
         }
     }
 
     public List<Integer> getSubtaskIds() {
         return subtaskIds;
-    }
-
-    public void setSubtaskIds(List<Integer> ids) {
-        this.subtaskIds = ids;
     }
 
     @Override
@@ -35,6 +32,7 @@ public class Epic extends Task {
                 '}';
     }
 
+/*
     @Override
     public Task copy() {
         Epic copy = new Epic(getName(), getDescription());
@@ -43,5 +41,6 @@ public class Epic extends Task {
         copy.setSubtaskIds(new ArrayList<>(getSubtaskIds()));
         return copy;
     }
+*/
 
 }

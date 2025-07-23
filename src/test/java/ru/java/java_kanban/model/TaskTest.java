@@ -27,17 +27,6 @@ public class TaskTest {
     }
 
     @Test
-    void copy_returnEqualButIndependentTask() {
-        Task original = new Task("Title", "Details", TaskStatus.NEW);
-        original.setId(77);
-
-        Task copy = original.copy();
-
-        assertEquals(original, copy);
-        assertNotSame(original, copy);
-    }
-
-    @Test
     void toString_containKeyFields() {
         Task task = new Task("X", "Y", TaskStatus.NEW);
         task.setId(10);

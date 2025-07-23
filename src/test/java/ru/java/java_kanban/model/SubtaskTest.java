@@ -20,16 +20,4 @@ public class SubtaskTest {
 
         assertEquals(s1, s2);
     }
-
-    @Test
-    void copy_createIndependentEqualCopy() {
-        Subtask original = new Subtask("S", "D", TaskStatus.IN_PROGRESS, 77);
-        original.setId(100);
-
-        Subtask copy = (Subtask) original.copy();
-
-        assertEquals(original, copy);
-        assertNotSame(original, copy);
-        assertEquals(original.getEpicId(), copy.getEpicId());
-    }
 }

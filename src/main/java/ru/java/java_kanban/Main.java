@@ -3,12 +3,13 @@ package ru.java.java_kanban;
 import ru.java.java_kanban.manager.history.*;
 import ru.java.java_kanban.manager.task.*;
 import ru.java.java_kanban.model.*;
-import ru.java.java_kanban.manager.Managers;
+import java.nio.file.Path;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+        TaskManager manager =
+                new FileBackedTaskManager(new InMemoryHistoryManager(), Path.of("tasks.csv"));
 
         // Добавление задач
         System.out.println("=== ДОБАВЛЕНИЕ ЗАДАЧ ===");

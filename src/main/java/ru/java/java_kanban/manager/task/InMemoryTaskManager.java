@@ -20,7 +20,9 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = historyManager;
     }
 
-
+    protected void setNextId(int newNextId) {
+        this.nextId = newNextId;
+    }
 
     //All about Task
     @Override

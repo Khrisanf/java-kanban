@@ -22,6 +22,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         loadFromFile();
     }
 
+    public static class ManagerSaveException extends RuntimeException {
+        public ManagerSaveException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     public void save() {
         List<String> lines = new ArrayList<>();
         lines.add("id,type,name,status,description,epic");
@@ -45,7 +51,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException("Error saving to file" + file, e);
+            throw new ManagerSaveException("Error saving to file" + file, e);
         }
     }
 
@@ -112,7 +118,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String line = reader.readLine();
             int maxId = 0;
 
-            while (line != null) {
+            while ((line = reader.readLine()) != null) {
                 Task task = fromCsv(line);
 
                 if (task instanceof Epic) {

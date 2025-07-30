@@ -3,13 +3,12 @@ package ru.java.java_kanban.model;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class TaskTest {
 
     @Test
     void equals_returnTrueIfIdsAreEqual() {
-        Task t1 = new Task("A", "Desc", TaskStatus.NEW);
-        Task t2 = new Task("B", "Diff", TaskStatus.DONE);
+        Task t1 = new Task("A", "Desc", TaskStatus.NEW, TaskType.TASK);
+        Task t2 = new Task("B", "Diff", TaskStatus.DONE, TaskType.TASK);
         t1.setId(1);
         t2.setId(1);
 
@@ -18,8 +17,8 @@ public class TaskTest {
 
     @Test
     void hashCode_beEqualForSameId() {
-        Task t1 = new Task("X", "Y", TaskStatus.IN_PROGRESS);
-        Task t2 = new Task("Z", "W", TaskStatus.NEW);
+        Task t1 = new Task("X", "Y", TaskStatus.IN_PROGRESS, TaskType.TASK);
+        Task t2 = new Task("Z", "W", TaskStatus.NEW, TaskType.TASK);
         t1.setId(99);
         t2.setId(99);
 
@@ -28,7 +27,7 @@ public class TaskTest {
 
     @Test
     void toString_containKeyFields() {
-        Task task = new Task("X", "Y", TaskStatus.NEW);
+        Task task = new Task("X", "Y", TaskStatus.NEW, TaskType.TASK);
         task.setId(10);
         String result = task.toString();
 
@@ -36,5 +35,6 @@ public class TaskTest {
         assertTrue(result.contains("name='X'"));
         assertTrue(result.contains("description='Y'"));
         assertTrue(result.contains("status=NEW"));
+        assertTrue(result.contains("type=TASK"));
     }
 }

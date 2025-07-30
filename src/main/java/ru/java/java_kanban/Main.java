@@ -3,18 +3,49 @@ package ru.java.java_kanban;
 import ru.java.java_kanban.manager.history.*;
 import ru.java.java_kanban.manager.task.*;
 import ru.java.java_kanban.model.*;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
 
     public static void main(String[] args) {
+        Path file = Path.of("tasks.csv");
         TaskManager manager =
-                new FileBackedTaskManager(new InMemoryHistoryManager(), Path.of("tasks.csv"));
+                new FileBackedTaskManager(new InMemoryHistoryManager(), file);
 
-        // Добавление задач
+        if (Files.notExists(file)) {
+            System.out.println("File " + file + " does not exist. Start scenario");
+            createScenario(manager);
+        } else {
+            System.out.println("File " + file + " already exists. Reload tasks");
+            printAll(manager);
+            System.out.println("History after reload");
+            printAll(manager);
+        }
+    }
+
+
+    private static void printAll(TaskManager manager) {
+        System.out.println("\n--- Общие задачи ---");
+        manager.getAllTasks().forEach(System.out::println);
+
+        System.out.println("\n--- Эпики ---");
+        manager.getAllEpics().forEach(System.out::println);
+
+        System.out.println("\n--- Подзадачи ---");
+        manager.getAllSubtasks().forEach(System.out::println);
+    }
+
+    private static void printHistory(TaskManager manager, String title) {
+        System.out.println("\n--- " + title + " ---");
+        System.out.println(manager.getHistory());
+    }
+
+    private static void createScenario(TaskManager manager) {
         System.out.println("=== ДОБАВЛЕНИЕ ЗАДАЧ ===");
-        Task task1 = new Task("Moving out", "Pack boxes", TaskStatus.NEW);
-        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW);
+        Task task1 = new Task("Moving out", "Pack boxes", TaskStatus.NEW, TaskType.TASK);
+        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW, TaskType.TASK);
         manager.addTask(task1);
         manager.addTask(task2);
 
@@ -66,23 +97,5 @@ public class Main {
         manager.deleteTaskById(task2.getId());
         manager.deleteEpicById(epic1.getId());
         printAll(manager);
-
-    }
-
-
-    private static void printAll(TaskManager manager) {
-        System.out.println("\n--- Общие задачи ---");
-        manager.getAllTasks().forEach(System.out::println);
-
-        System.out.println("\n--- Эпики ---");
-        manager.getAllEpics().forEach(System.out::println);
-
-        System.out.println("\n--- Подзадачи ---");
-        manager.getAllSubtasks().forEach(System.out::println);
-    }
-
-    private static void printHistory(TaskManager manager, String title) {
-        System.out.println("\n--- " + title + " ---");
-        System.out.println(manager.getHistory());
     }
 }

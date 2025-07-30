@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
-    private final HistoryManager historyManager;
+    protected final HistoryManager historyManager;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -65,6 +65,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
         }
+    }
+
+    protected void restoreTask(Task task) {
+        tasks.put(task.getId(), task);
     }
 
     //All about Epic
@@ -146,6 +150,10 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
+    }
+
+    protected void restoreEpic(Epic epic) {
+        epics.put(epic.getId(), epic);
     }
 
 
@@ -250,10 +258,18 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
+    protected void restoreSubtask(Subtask subtask) {
+        subtasks.put(subtask.getId(), subtask);
+
+        Epic epic = epics.get(subtask.getEpicId());
+        if (epic != null) {
+            epic.addSubtaskIds(subtask.getId());
+            updateEpicStatus(epic.getId());
+        }
+    }
+
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }
-
-
 }

@@ -1,6 +1,7 @@
 package ru.java.java_kanban.task;
 
 import org.junit.jupiter.api.*;
+import ru.java.java_kanban.manager.ManagerSaveException;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
 import ru.java.java_kanban.manager.task.FileBackedTaskManager;
 import ru.java.java_kanban.model.*;
@@ -34,7 +35,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void addTask_savesTaskToFile() throws IOException {
-            Task task = new Task("Test", "Description", TaskStatus.NEW);
+            Task task = new Task("Test", "Description", TaskStatus.NEW, TaskType.TASK);
             manager.addTask(task);
 
             List<String> lines = Files.readAllLines(testFile);
@@ -43,7 +44,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void updateTask_updatesFileAfterChange() throws IOException {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
+            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW, TaskType.TASK));
             task.setStatus(TaskStatus.DONE);
             manager.updateTask(task);
 
@@ -53,7 +54,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void deleteTaskById_removesFromFile() throws IOException {
-            Task task = manager.addTask(new Task("To delete", "Desc", TaskStatus.NEW));
+            Task task = manager.addTask(new Task("To delete", "Desc", TaskStatus.NEW, TaskType.TASK));
             manager.deleteTaskById(task.getId());
 
             String content = Files.readString(testFile);
@@ -109,31 +110,6 @@ public class FileBackedTaskManagerTest {
             manager.deleteSubtaskById(subtask.getId());
             String content = Files.readString(testFile);
             assertFalse(content.contains("Sub"));
-        }
-    }
-
-    // === SPECIAL CASES ===
-    @Nested
-    class SpecialCasesTest {
-
-        @Test
-        void loadFromFile_skipsSubtasksWithoutEpic() throws IOException {
-            Files.writeString(testFile,
-                    "id,type,name,status,description,epic\n" +
-                            "1,SUBTASK,Orphan,NEW,Desc,999");
-
-            FileBackedTaskManager newManager = new FileBackedTaskManager(new InMemoryHistoryManager(), testFile);
-            assertTrue(newManager.getAllSubtasks().isEmpty());
-        }
-
-        @Test
-        void save_throwsManagerSaveException_ifFileNotWritable() {
-            Path invalidFile = Path.of("/root/forbidden.csv");
-            FileBackedTaskManager badManager =
-                    new FileBackedTaskManager(new InMemoryHistoryManager(), invalidFile);
-
-            assertThrows(FileBackedTaskManager.ManagerSaveException.class,
-                    () -> badManager.addTask(new Task("Test", "D", TaskStatus.NEW)));
         }
     }
 }

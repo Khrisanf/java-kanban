@@ -1,8 +1,4 @@
 id,type,name,status,description,epic
-1,TASK,Moving out,DONE,Pack boxes,
-2,TASK,Moving out,DONE,Pack boxes,
-15,TASK,Moving out,DONE,Pack boxes,
-3,EPIC,Session,DONE,Pass deadlines,
-4,EPIC,Session,DONE,Pass deadlines,
-20,EPIC,Session,DONE,Pass deadlines,
-21,SUBTASK,Pass java,DONE,Pass projects,20
+1,TASK,Moving out,DONE,Pack boxes,1,TASK,Moving out,DONE,Pack boxes,
+6,EPIC,Session,DONE,Pass deadlines,6,EPIC,Session,DONE,Pass deadlines,
+7,SUBTASK,Pass java,DONE,Pass projects,7,SUBTASK,Pass java,DONE,Pass projects,6

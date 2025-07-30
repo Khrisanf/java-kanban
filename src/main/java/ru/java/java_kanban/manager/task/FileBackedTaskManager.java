@@ -1,7 +1,9 @@
 package ru.java.java_kanban.manager.task;
 
+import ru.java.java_kanban.manager.ManagerSaveException;
 import ru.java.java_kanban.manager.history.HistoryManager;
 import ru.java.java_kanban.model.*;
+import ru.java.java_kanban.util.CsvConverter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final Path file;
+    private HistoryManager historyManager;
 
     public FileBackedTaskManager(HistoryManager historyManager, Path file) {
         super(historyManager);
@@ -22,26 +25,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         loadFromFile();
     }
 
-    public static class ManagerSaveException extends RuntimeException {
-        public ManagerSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-    public void save() {
+    private void save() {
         List<String> lines = new ArrayList<>();
         lines.add("id,type,name,status,description,epic");
 
         for (Task task : getAllTasks()) {
-            lines.add(toCsv(task));
+            lines.add(CsvConverter.toString(task));
         }
 
         for (Epic epic : getAllEpics()) {
-            lines.add(toCsv(epic));
+            lines.add(CsvConverter.toString(epic));
         }
 
         for (Subtask subtask : getAllSubtasks()) {
-            lines.add(toCsv(subtask));
+            lines.add(CsvConverter.toString(subtask));
         }
 
         try {
@@ -51,62 +48,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            throw new ManagerSaveException("Error saving to file" + file, e);
+            throw new ManagerSaveException("Error saving to file" + file);
         }
     }
 
-    private String toCsv(Task task) {
-        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(task.getId()).append(",");
-        stringBuilder.append(task.getType()).append(",");
-        stringBuilder.append(task.getName()).append(",");
-        stringBuilder.append(task.getStatus()).append(",");
-        stringBuilder.append(task.getDescription()).append(",");
-
-        if (task instanceof Subtask) {
-            stringBuilder.append(((Subtask) task).getEpicId());
-        }
-
-        return stringBuilder.toString();
-    }
-
-    private Task fromCsv(String line) {
-        String[] parts = line.split(",");
-
-        int id = Integer.parseInt(parts[0]);
-        String type = parts[1];
-        String name = parts[2];
-        String status = parts[3];
-        String description = parts[4];
-
-        switch (type) {
-            case "TASK":
-                Task task = new Task(name,
-                        description,
-                        TaskStatus.valueOf(status));
-                task.setId(id);
-                return task;
-
-            case "EPIC":
-                Epic epic = new Epic(name, description);
-                epic.setId(id);
-                epic.setStatus(TaskStatus.valueOf(status));
-                return epic;
-
-            case "SUBTASK":
-                int epicId = Integer.parseInt(parts[5]);
-                Subtask subtask = new Subtask(name,
-                        description,
-                        TaskStatus.valueOf(status),
-                        epicId);
-                subtask.setId(id);
-                return subtask;
-
-            default:
-                throw new IllegalArgumentException("Unknown task type: " + type);
-        }
-    }
 
     private void loadFromFile() {
         if (!Files.exists(file)) {
@@ -118,33 +64,49 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String line = reader.readLine();
             int maxId = 0;
 
-            while ((line = reader.readLine()) != null) {
-                Task task = fromCsv(line);
+            List<String> taskLines = new ArrayList<>();
 
-                if (task instanceof Epic) {
-                    super.addEpic((Epic) task);
-                } else if (task instanceof Subtask subtask) {
-                    if (getEpicById(subtask.getEpicId()) != null) {
-                        super.addSubtask(subtask);
-                    } else {
-                        System.out.println("⚠ Subtask " + subtask.getId()
-                                + "has missed: there is no epic with id="
-                                + subtask.getEpicId());
-                    }
-                } else {
-                    super.addTask(task);
-                }
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
+                taskLines.add(line);
+            }
 
-                if (task.getId() > maxId) {
-                    maxId = task.getId();
+            for (String l : taskLines) {
+                Task task = CsvConverter.fromString(l);
+                maxId = Math.max(maxId, task.getId());
+
+                if (task instanceof Epic epic) {
+                    restoreEpic(epic);
+                } else if (!(task instanceof Subtask)) {
+                    restoreTask(task);
                 }
             }
 
-            save();
-            System.out.println("File updated after download: " + file);
+            for (String l :  taskLines) {
+                Task task = CsvConverter.fromString(l);
+                if (task instanceof Subtask subtask) {
+                    if (getEpicById(Subtask.getEpicId()) != null) {
+                        restoreSubtask(subtask);
+                    } else {
+                        throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
+                                + " has missed: there is no epic with id="
+                                + subtask.getEpicId());
+                    }
+                }
+            }
 
+            if ((line = reader.readLine()) != null && !line.isBlank()) {
+                String[] fields = line.split(",");
+                for (String field : fields) {
+                    int id = Integer.parseInt(field.trim());
+                    Task task = getTaskById(id);
+                    if (task != null) {
+                        historyManager.add(task);
+                    }
+                }
+            }
 
             setNextId(maxId + 1);
+            System.out.printf("File loaded successfully! " + file.getFileName());
         } catch (IOException e) {
             throw new RuntimeException("⚠ Error loading from file: " + file, e);
         }
@@ -153,9 +115,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     //ABOUT TASK
     @Override
     public Task addTask(Task task) {
-        super.addTask(task);
+        Task added = super.addTask(task);
         save();
-        return task;
+        return added;
     }
 
     @Override

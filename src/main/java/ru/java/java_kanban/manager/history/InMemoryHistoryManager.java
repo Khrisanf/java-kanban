@@ -48,7 +48,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (historyMap.containsKey(task.getId())) {
             removeNode(historyMap.get(task.getId()));
         }
-        linkLast(task);
+        linkLast(task.copy());
     }
 
     @Override

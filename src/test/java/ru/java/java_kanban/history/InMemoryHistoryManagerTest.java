@@ -1,6 +1,5 @@
 package ru.java.java_kanban.history;
 
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,6 +7,7 @@ import ru.java.java_kanban.manager.history.HistoryManager;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
 import ru.java.java_kanban.model.Task;
 import ru.java.java_kanban.model.TaskStatus;
+import ru.java.java_kanban.model.TaskType;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void add_moveTaskToEnd_ifAlreadyInHistory() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task1.setId(1);
-        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW, TaskType.TASK);
         task2.setId(2);
 
         historyManager.add(task1);
@@ -34,9 +34,9 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void remove_deleteTaskFromHistory_ifExists() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task1.setId(1);
-        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW, TaskType.TASK);
         task2.setId(2);
 
         historyManager.add(task1);
@@ -64,7 +64,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void add_setHeadAndTail_ifHistoryEmpty() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task.setId(1);
 
         historyManager.add(task);
@@ -77,9 +77,9 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void remove_updateHead_ifFirstTaskRemoved() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task1.setId(1);
-        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW, TaskType.TASK);
         task2.setId(2);
 
         historyManager.add(task1);
@@ -94,9 +94,9 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void remove_updateTail_ifLastTaskRemoved() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task1 = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task1.setId(1);
-        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", TaskStatus.NEW, TaskType.TASK);
         task2.setId(2);
 
         historyManager.add(task1);
@@ -111,7 +111,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void add_appearInHistory_ifNotNull() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task = new Task("Test Task", "Test Description", TaskStatus.NEW);
+        Task task = new Task("Test Task", "Test Description", TaskStatus.NEW, TaskType.TASK);
         task.setId(1);
 
         historyManager.add(task);
@@ -124,7 +124,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void remove_clearHistory_ifLastTaskRemoved() {
         HistoryManager historyManager = new InMemoryHistoryManager();
-        Task task = new Task("Task 1", "Desc", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Desc", TaskStatus.NEW, TaskType.TASK);
         task.setId(1);
 
         historyManager.add(task);
@@ -142,4 +142,3 @@ public class InMemoryHistoryManagerTest {
         assertTrue(history.isEmpty());
     }
 }
-

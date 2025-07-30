@@ -108,7 +108,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             setNextId(maxId + 1);
             System.out.printf("File loaded successfully! " + file.getFileName());
         } catch (IOException e) {
-            throw new RuntimeException("⚠ Error loading from file: " + file, e);
+            throw new ManagerSaveException("⚠ Error loading from file: " + file);
         }
     }
 

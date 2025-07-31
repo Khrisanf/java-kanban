@@ -8,7 +8,7 @@ public class Subtask extends Task {
                    TaskStatus status,
                    int epicId) {
         super(name, description, status, TaskType.SUBTASK);
-        this.epicId = epicId;
+        Subtask.epicId = epicId;
     }
 
     public static Integer getEpicId() {
@@ -16,7 +16,7 @@ public class Subtask extends Task {
     }
 
     public void setEpicId(int epicId) {
-        this.epicId = epicId;
+        Subtask.epicId = epicId;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Subtask extends Task {
                 '}';
     }
 
-   @Override
+    @Override
     public Task copy() {
         Subtask copy = new Subtask(getName(), getDescription(), getStatus(), getEpicId());
         copy.setId(this.getId());

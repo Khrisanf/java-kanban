@@ -4,21 +4,17 @@ import ru.java.java_kanban.model.*;
 
 public final class CsvConverter {
 
-    private CsvConverter() {}
+    private CsvConverter() {
+    }
 
     public static String toString(Task task) {
-        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder
-                .append(task.getId()).append(",")
-                .append(task.getType()).append(",")
-                .append(task.getName()).append(",")
-                .append(task.getStatus()).append(",")
-                .append(task.getDescription()).append(",");
-
-        stringBuilder.append(task.toCsvString());
-
-        return stringBuilder.toString();
+        return task.getId() + "," +
+                task.getType() + "," +
+                task.getName() + "," +
+                task.getStatus() + "," +
+                task.getDescription() + "," +
+                task.toCsvString();
     }
 
     public static Task fromString(String line) {
@@ -58,9 +54,4 @@ public final class CsvConverter {
                 throw new IllegalArgumentException("Unknown task type: " + type);
         }
     }
-
-    public static String getHeader() {
-        return "id,type,name,status,description,epic";
-    }
-
 }

@@ -3,8 +3,8 @@ package ru.java.java_kanban.model;
 import java.util.Objects;
 
 public class Task {
-    private Integer id;
     protected final TaskType type;
+    private Integer id;
     private String name;
     private String description;
     private TaskStatus status;
@@ -44,12 +44,12 @@ public class Task {
         this.description = description;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
     public TaskStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     public Task copy() {

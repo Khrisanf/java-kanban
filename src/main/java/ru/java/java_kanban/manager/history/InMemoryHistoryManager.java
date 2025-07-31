@@ -2,13 +2,16 @@ package ru.java.java_kanban.manager.history;
 
 import ru.java.java_kanban.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    private final Map<Integer, Node> historyMap = new HashMap<>();
     private Node head;
     private Node tail;
-    private final Map<Integer, Node> historyMap = new HashMap<>();
 
     private void linkLast(Task task) {
         Node oldTail = tail;
@@ -69,8 +72,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private static class Node {
-        private Node prev;
         private final Task task;
+        private Node prev;
         private Node next;
 
         public Node(Node prev, Task task, Node next) {

@@ -60,12 +60,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-
             String line;
             int maxId = 0;
-
             List<String> taskLines = new ArrayList<>();
 
+            // Пропускаем заголовок
+            reader.readLine();
+
+            // Читаем задачи
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 taskLines.add(line);
             }
@@ -74,26 +76,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = CsvConverter.fromString(l);
                 maxId = Math.max(maxId, task.getId());
 
-                if (task instanceof Epic epic) {
+                if (task instanceof Subtask) {
+                    Subtask subtask = (Subtask) task;
+                    if (getEpicById(subtask.getEpicId()) != null) {
+                        restoreSubtask(subtask);
+                    } else {
+                        throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
+                                + " has missed: there is no epic with id=" + subtask.getEpicId());
+                    }
+                } else if (task instanceof Epic) {
+                    Epic epic = (Epic) task;
                     restoreEpic(epic);
-                } else if (!(task instanceof Subtask)) {
+                } else {
                     restoreTask(task);
                 }
             }
 
-            for (String l : taskLines) {
-                Task task = CsvConverter.fromString(l);
-                if (task instanceof Subtask subtask) {
-                    if (getEpicById(Subtask.getEpicId()) != null) {
-                        restoreSubtask(subtask);
-                    } else {
-                        throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
-                                + " has missed: there is no epic with id="
-                                + Subtask.getEpicId());
-                    }
-                }
-            }
-
+            // Читаем строку истории (если есть)
             if ((line = reader.readLine()) != null && !line.isBlank()) {
                 String[] fields = line.split(",");
                 for (String field : fields) {
@@ -106,11 +105,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
             setNextId(maxId + 1);
-            System.out.printf("File loaded successfully! " + file.getFileName());
+            System.out.println("File loaded successfully! " + file.getFileName());
+
         } catch (IOException e) {
             throw new ManagerSaveException("⚠ Error loading from file: " + file);
         }
     }
+
 
     //ABOUT TASK
     @Override

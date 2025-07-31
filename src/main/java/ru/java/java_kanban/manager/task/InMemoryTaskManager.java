@@ -121,7 +121,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void updateEpicStatus(Integer epicId) {
         Epic epic = epics.get(epicId);
-        if (epic == null) return;
+        if (epic == null) {
+            return;
+        }
 
         List<Integer> subtaskIds = epic.getSubtaskIds();
         if (subtaskIds.isEmpty()) {
@@ -134,7 +136,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Integer subtaskId : subtaskIds) {
             Subtask subtask = subtasks.get(subtaskId);
-            if (subtask == null) continue;
+            if (subtask == null) {
+                continue;
+            }
 
             TaskStatus status = subtask.getStatus();
             if (status != TaskStatus.NEW) {
@@ -209,8 +213,7 @@ public class InMemoryTaskManager implements TaskManager {
         Integer epicId = Subtask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            System.out.println("error! there is no epic for this task !"
-                    + epicId + "not found.");
+            System.out.println("error! there is no epic for this task !" + epicId + "not found.");
             return null;
         }
 
@@ -248,7 +251,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubtasksOfEpic(Integer epicId) {
         Epic epic = epics.get(epicId);
-        if (epic == null) return new ArrayList<>();
+        if (epic == null) {
+            return new ArrayList<>();
+        }
 
         List<Subtask> result = new ArrayList<>();
         for (Integer subtaskId : epic.getSubtaskIds()) {

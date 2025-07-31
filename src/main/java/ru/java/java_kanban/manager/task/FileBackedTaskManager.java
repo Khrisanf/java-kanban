@@ -60,7 +60,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
 
-            String line = reader.readLine();
+            String line;
             int maxId = 0;
 
             List<String> taskLines = new ArrayList<>();
@@ -88,7 +88,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     } else {
                         throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
                                 + " has missed: there is no epic with id="
-                                + subtask.getEpicId());
+                                + Subtask.getEpicId());
                     }
                 }
             }

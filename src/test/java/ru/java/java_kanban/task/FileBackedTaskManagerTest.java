@@ -34,7 +34,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void addTask_savesTaskToFile() throws IOException {
-            Task task = new Task("Test", "Description", TaskStatus.NEW, TaskType.TASK);
+            Task task = new Task("Test", "Description", TaskStatus.NEW);
             manager.addTask(task);
 
             List<String> lines = Files.readAllLines(testFile);
@@ -43,7 +43,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void updateTask_updatesFileAfterChange() throws IOException {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
             task.setStatus(TaskStatus.DONE);
             manager.updateTask(task);
 
@@ -53,7 +53,7 @@ public class FileBackedTaskManagerTest {
 
         @Test
         void deleteTaskById_removesFromFile() throws IOException {
-            Task task = manager.addTask(new Task("To delete", "Desc", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("To delete", "Desc", TaskStatus.NEW));
             manager.deleteTaskById(task.getId());
 
             String content = Files.readString(testFile);

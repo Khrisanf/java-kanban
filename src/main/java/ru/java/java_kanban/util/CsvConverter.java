@@ -15,13 +15,11 @@ public final class CsvConverter {
         sb.append(task.getStatus()).append(",");
         sb.append(task.getDescription());
 
-        switch (task.getType()) {
-            case SUBTASK:
-                Subtask subtask = (Subtask) task;
-                sb.append(",").append(subtask.getEpicId());
-                break;
-            default:
-                sb.append(",");
+        if (task.getType() == TaskType.SUBTASK) {
+            Subtask subtask = (Subtask) task;
+            sb.append(",").append(subtask.getEpicId());
+        } else {
+            sb.append(",");
         }
 
         return sb.toString();
@@ -40,8 +38,8 @@ public final class CsvConverter {
             case TASK:
                 Task task = new Task(name,
                         description,
-                        TaskStatus.valueOf(status),
-                        TaskType.TASK);
+                        TaskStatus.valueOf(status)
+                );
                 task.setId(id);
                 return task;
 

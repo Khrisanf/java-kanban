@@ -3,15 +3,13 @@ package ru.java.java_kanban.model;
 import java.util.Objects;
 
 public class Task {
-    protected final TaskType type;
     private Integer id;
     private String name;
     private String description;
     private TaskStatus status;
 
-    public Task(String name, String description, TaskStatus status, TaskType type) {
+    public Task(String name, String description, TaskStatus status) {
         this.name = name;
-        this.type = type;
         this.description = description;
         this.status = status;
     }
@@ -25,7 +23,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return type;
+        return TaskType.TASK;
     }
 
     public String getName() {
@@ -53,10 +51,11 @@ public class Task {
     }
 
     public Task copy() {
-        Task copy = new Task(getName(), getDescription(), status, type);
+        Task copy = new Task(getName(), getDescription(), status);
         copy.setId(this.id);
         return copy;
     }
+
 
     @Override
     public String toString() {
@@ -65,7 +64,7 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", type=" + type +
+                ", type=" + TaskType.TASK +
                 '}';
     }
 

@@ -7,7 +7,7 @@ public class Epic extends Task {
     private List<Integer> subtaskIds = new ArrayList<>();
 
     public Epic(String name, String description) {
-        super(name, description, TaskStatus.NEW, TaskType.EPIC);
+        super(name, description, TaskStatus.NEW);
     }
 
     public void addSubtaskIds(int subtaskId) {
@@ -17,6 +17,11 @@ public class Epic extends Task {
         if (!subtaskIds.contains(subtaskId)) {
             subtaskIds.add(subtaskId);
         }
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     public List<Integer> getSubtaskIds() {

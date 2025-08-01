@@ -45,8 +45,8 @@ public class Main {
 
     private static void createScenario(TaskManager manager) {
         System.out.println("=== ДОБАВЛЕНИЕ ЗАДАЧ ===");
-        Task task1 = new Task("Moving out", "Pack boxes", TaskStatus.NEW, TaskType.TASK);
-        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW, TaskType.TASK);
+        Task task1 = new Task("Moving out", "Pack boxes", TaskStatus.NEW);
+        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW);
         manager.addTask(task1);
         manager.addTask(task2);
 

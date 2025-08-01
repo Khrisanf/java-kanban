@@ -26,7 +26,7 @@ public class InMemoryTaskManagerTest {
     class TaskTest {
         @Test
         void addTask_returnsAddedTask() {
-            Task task = new Task("Test", "Description", TaskStatus.NEW, TaskType.TASK);
+            Task task = new Task("Test", "Description", TaskStatus.NEW);
             Task added = manager.addTask(task);
             assertNotNull(added);
             assertEquals("Test", added.getName());
@@ -34,7 +34,7 @@ public class InMemoryTaskManagerTest {
 
         @Test
         void getTaskById_returnsCorrectTask() {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
             Task retrieved = manager.getTaskById(task.getId());
             assertEquals(task, retrieved);
         }
@@ -46,7 +46,7 @@ public class InMemoryTaskManagerTest {
 
         @Test
         void updateTask_changesFields() {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
             task.setName("Updated");
             task.setDescription("Updated desc");
             task.setStatus(TaskStatus.IN_PROGRESS);
@@ -58,7 +58,7 @@ public class InMemoryTaskManagerTest {
 
         @Test
         void updateTask_doesNotAdd_ifIdNotExists() {
-            Task unknown = new Task("Ghost", "not exist", TaskStatus.NEW, TaskType.TASK);
+            Task unknown = new Task("Ghost", "not exist", TaskStatus.NEW);
             unknown.setId(999);
             manager.updateTask(unknown);
             assertNull(manager.getTaskById(999));
@@ -66,7 +66,7 @@ public class InMemoryTaskManagerTest {
 
         @Test
         void deleteTaskById_removesTask() {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
             manager.deleteTaskById(task.getId());
             assertNull(manager.getTaskById(task.getId()));
         }
@@ -234,7 +234,7 @@ public class InMemoryTaskManagerTest {
     class HistoryTest {
         @Test
         void getTaskById_addsToHistory() {
-            Task task = manager.addTask(new Task("T", "H", TaskStatus.NEW, TaskType.TASK));
+            Task task = manager.addTask(new Task("T", "H", TaskStatus.NEW));
             manager.getTaskById(task.getId());
             List<Task> history = manager.getHistory();
             assertEquals(1, history.size());

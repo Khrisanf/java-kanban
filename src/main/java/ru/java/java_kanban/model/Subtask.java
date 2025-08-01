@@ -36,10 +36,4 @@ public class Subtask extends Task {
         copy.setId(this.getId());
         return copy;
     }
-
-    @Override
-    public String toCsvString() {
-        return super.toCsvString() + getEpicId();
-    }
-
 }

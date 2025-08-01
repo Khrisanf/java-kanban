@@ -16,13 +16,22 @@
     </properties>
 
     <dependencies>
+        <!-- JUnit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Checkstyle explicitly as dependency -->
+        <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>10.12.1</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
@@ -47,11 +56,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.3.0</version>
                 <configuration>
                     <failOnViolation>false</failOnViolation> <!-- ВАЖНО! -->
+                    <propertyExpansion>true</propertyExpansion>
                     <configLocation>checkstyle.xml</configLocation>
-                    <encoding>${project.build.sourceEncoding}</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
                 </configuration>

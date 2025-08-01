@@ -5,6 +5,7 @@ import ru.java.java_kanban.manager.history.HistoryManager;
 import ru.java.java_kanban.model.Epic;
 import ru.java.java_kanban.model.Subtask;
 import ru.java.java_kanban.model.Task;
+import ru.java.java_kanban.model.TaskType;
 import ru.java.java_kanban.util.CsvConverter;
 
 import java.io.BufferedReader;
@@ -13,8 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -53,6 +53,64 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
+    private List<String> readTasksLines(BufferedReader reader) throws IOException {
+        List<String> lines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+            lines.add(line);
+        }
+        return lines;
+    }
+
+    private int parseTaskIds(List<String> lines) {
+        int maxId = 0;
+        Map<Integer, Task> tempTasks = new HashMap<>();
+        List<Subtask> subtasksToRestore = new ArrayList<>();
+
+        for (String line : lines) {
+            Task task = CsvConverter.fromString(line);
+            maxId = Math.max(maxId, task.getId());
+
+            if (Objects.requireNonNull(task.getType()) == TaskType.SUBTASK) {
+                subtasksToRestore.add((Subtask) task);
+            } else {
+                tempTasks.put(task.getId(), task);
+            }
+        }
+
+        for (Task task : tempTasks.values()) {
+            switch (task.getType()) {
+                case TASK -> restoreTask(task);
+                case EPIC -> restoreEpic((Epic) task);
+                default -> throw new ManagerSaveException("Invalid task type");
+            }
+        }
+
+        for (Subtask subtask : subtasksToRestore) {
+            if (getEpicById(subtask.getEpicId()) != null) {
+                restoreSubtask(subtask);
+            } else {
+                throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
+                        + " has missed: there is no epic with id=" + subtask.getEpicId());
+            }
+        }
+        return maxId;
+    }
+
+    private void parseHistory(BufferedReader reader) throws IOException {
+        String line = reader.readLine();
+
+        if ((line = reader.readLine()) != null && !line.isBlank()) {
+            String[] fields = line.split(",");
+            for (String field : fields) {
+                int id = Integer.parseInt(field.trim());
+                Task task = getTaskById(id);
+                if (task != null) {
+                    historyManager.add(task);
+                }
+            }
+        }
+    }
 
     private void loadFromFile() {
         if (!Files.exists(file)) {
@@ -60,56 +118,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-            String line;
-            int maxId = 0;
-            List<String> taskLines = new ArrayList<>();
-
             reader.readLine();
-
-            while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                taskLines.add(line);
-            }
-
-            for (String l : taskLines) {
-                Task task = CsvConverter.fromString(l);
-                maxId = Math.max(maxId, task.getId());
-
-                switch (task.getType()) {
-                    case SUBTASK:
-                    Subtask subtask = (Subtask) task;
-                    if (getEpicById(subtask.getEpicId()) != null) {
-                        restoreSubtask(subtask);
-                    } else {
-                        throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
-                                + " has missed: there is no epic with id=" + subtask.getEpicId());
-                    }
-                    break;
-
-                    case EPIC:
-                        Epic epic = (Epic) task;
-                        restoreEpic(epic);
-                        break;
-
-                    case TASK:
-                        restoreTask(task);
-
-                     default:
-                         throw new IllegalStateException("Unexpected value: " + task.getType());
-                }
-
-            }
-
-            if ((line = reader.readLine()) != null && !line.isBlank()) {
-                String[] fields = line.split(",");
-                for (String field : fields) {
-                    int id = Integer.parseInt(field.trim());
-                    Task task = getTaskById(id);
-                    if (task != null) {
-                        historyManager.add(task);
-                    }
-                }
-            }
-
+            List<String> taskLines = readTasksLines(reader);
+            int maxId = parseTaskIds(taskLines);
+            parseHistory(reader);
             setNextId(maxId + 1);
             System.out.println("File loaded successfully! " + file.getFileName());
 
@@ -117,7 +129,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("⚠ Error loading from file: " + file);
         }
     }
-
 
     //ABOUT TASK
     @Override

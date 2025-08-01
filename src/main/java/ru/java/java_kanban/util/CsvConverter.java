@@ -8,13 +8,23 @@ public final class CsvConverter {
     }
 
     public static String toString(Task task) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(task.getId()).append(",");
+        sb.append(task.getType()).append(",");
+        sb.append(task.getName()).append(",");
+        sb.append(task.getStatus()).append(",");
+        sb.append(task.getDescription());
 
-        return task.getId() + "," +
-                task.getType() + "," +
-                task.getName() + "," +
-                task.getStatus() + "," +
-                task.getDescription() + "," +
-                task.toCsvString();
+        switch (task.getType()) {
+            case SUBTASK:
+                Subtask subtask = (Subtask) task;
+                sb.append(",").append(subtask.getEpicId());
+                break;
+            default:
+                sb.append(",");
+        }
+
+        return sb.toString();
     }
 
     public static Task fromString(String line) {

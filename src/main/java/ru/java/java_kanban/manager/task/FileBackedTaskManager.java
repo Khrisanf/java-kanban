@@ -64,10 +64,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int maxId = 0;
             List<String> taskLines = new ArrayList<>();
 
-            // Пропускаем заголовок
             reader.readLine();
 
-            // Читаем задачи
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 taskLines.add(line);
             }
@@ -76,7 +74,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = CsvConverter.fromString(l);
                 maxId = Math.max(maxId, task.getId());
 
-                if (task instanceof Subtask) {
+                switch (task.getType()) {
+                    case SUBTASK:
                     Subtask subtask = (Subtask) task;
                     if (getEpicById(subtask.getEpicId()) != null) {
                         restoreSubtask(subtask);
@@ -84,15 +83,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
                                 + " has missed: there is no epic with id=" + subtask.getEpicId());
                     }
-                } else if (task instanceof Epic) {
-                    Epic epic = (Epic) task;
-                    restoreEpic(epic);
-                } else {
-                    restoreTask(task);
+                    break;
+
+                    case EPIC:
+                        Epic epic = (Epic) task;
+                        restoreEpic(epic);
+                        break;
+
+                    case TASK:
+                        restoreTask(task);
+
+                     default:
+                         throw new IllegalStateException("Unexpected value: " + task.getType());
                 }
+
             }
 
-            // Читаем строку истории (если есть)
             if ((line = reader.readLine()) != null && !line.isBlank()) {
                 String[] fields = line.split(",");
                 for (String field : fields) {

@@ -58,11 +58,6 @@ public class Task {
         return copy;
     }
 
-    public String toCsvString() {
-        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + ",";
-    }
-
-
     @Override
     public String toString() {
         return "Task{" +

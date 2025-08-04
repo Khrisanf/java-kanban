@@ -31,15 +31,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         lines.add("id,type,name,status,description,epic");
 
         for (Task task : getAllTasks()) {
-            lines.add(CsvConverter.toString(task));
+            lines.add(CsvConverter.toCsvString(task));
         }
 
         for (Epic epic : getAllEpics()) {
-            lines.add(CsvConverter.toString(epic));
+            lines.add(CsvConverter.toCsvString(epic));
         }
 
         for (Subtask subtask : getAllSubtasks()) {
-            lines.add(CsvConverter.toString(subtask));
+            lines.add(CsvConverter.toCsvString(subtask));
         }
 
         try {
@@ -64,31 +64,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private int parseTaskIds(List<String> lines) {
         int maxId = 0;
-        Map<Integer, Task> tempTasks = new HashMap<>();
+        Map<Integer, Task> tasksToRestore = new HashMap<>();
         List<Subtask> subtasksToRestore = new ArrayList<>();
 
         for (String line : lines) {
-            Task task = CsvConverter.fromString(line);
+            Task task = CsvConverter.fromCvsString(line);
             maxId = Math.max(maxId, task.getId());
 
             if (Objects.requireNonNull(task.getType()) == TaskType.SUBTASK) {
                 subtasksToRestore.add((Subtask) task);
             } else {
-                tempTasks.put(task.getId(), task);
+                tasksToRestore.put(task.getId(), task);
             }
         }
 
-        for (Task task : tempTasks.values()) {
-            switch (task.getType()) {
-                case TASK -> restoreTask(task);
-                case EPIC -> restoreEpic((Epic) task);
-                default -> throw new ManagerSaveException("Invalid task type");
+        for (Task task : tasksToRestore.values()) {
+            if (task.getType() == TaskType.TASK) {
+                this.tasks.put(task.getId(), task);
+            } else if (task.getType() == TaskType.EPIC) {
+                Epic epic = (Epic) task;
+                this.epics.put(epic.getId(), epic);
+            } else {
+                throw new ManagerSaveException("Invalid task type");
             }
         }
+
 
         for (Subtask subtask : subtasksToRestore) {
-            if (getEpicById(subtask.getEpicId()) != null) {
-                restoreSubtask(subtask);
+            this.subtasks.put(subtask.getId(), subtask);
+
+            Epic epic = epics.get(subtask.getEpicId());
+            if (epic != null) {
+                epic.addSubtaskIds(subtask.getId());
+                updateEpicStatus(epic.getId());
             } else {
                 throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
                         + " has missed: there is no epic with id=" + subtask.getEpicId());

@@ -7,7 +7,7 @@ public final class CsvConverter {
     private CsvConverter() {
     }
 
-    public static String toString(Task task) {
+    public static String toCsvString(Task task) {
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId()).append(",");
         sb.append(task.getType()).append(",");
@@ -15,17 +15,16 @@ public final class CsvConverter {
         sb.append(task.getStatus()).append(",");
         sb.append(task.getDescription());
 
-        if (task.getType() == TaskType.SUBTASK) {
-            Subtask subtask = (Subtask) task;
-            sb.append(",").append(subtask.getEpicId());
-        } else {
-            sb.append(",");
-        }
-
         return sb.toString();
     }
 
-    public static Task fromString(String line) {
+    public static String toCsvString(Subtask subtask) {
+        String line = toCsvString((Task) subtask);
+        String s = line + subtask.getEpicId();
+        return s;
+    }
+
+    public static Task fromCvsString(String line) {
         String[] parts = line.split(",");
 
         int id = Integer.parseInt(parts[0]);

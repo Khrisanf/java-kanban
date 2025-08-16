@@ -22,6 +22,10 @@ public class Task {
         this.id = id;
     }
 
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
     public String getName() {
         return name;
     }
@@ -38,12 +42,12 @@ public class Task {
         this.description = description;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
     public TaskStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     public Task copy() {
@@ -52,6 +56,7 @@ public class Task {
         return copy;
     }
 
+
     @Override
     public String toString() {
         return "Task{" +
@@ -59,13 +64,18 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", type=" + TaskType.TASK +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Task task = (Task) o;
         return Objects.equals(id, task.id);
     }

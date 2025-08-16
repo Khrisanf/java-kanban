@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Test;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
 import ru.java.java_kanban.manager.task.InMemoryTaskManager;
 import ru.java.java_kanban.manager.task.TaskManager;
-import ru.java.java_kanban.model.Epic;
-import ru.java.java_kanban.model.Subtask;
-import ru.java.java_kanban.model.Task;
-import ru.java.java_kanban.model.TaskStatus;
+import ru.java.java_kanban.model.*;
 
 import java.util.List;
 

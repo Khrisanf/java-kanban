@@ -16,32 +16,64 @@
     </properties>
 
     <dependencies>
+        <!-- JUnit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Checkstyle explicitly as dependency -->
+        <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>10.12.1</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
-            <!-- Тесты (уже есть, но оставляем) -->
+            <!-- Для запуска тестов -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
 
-            <!-- Запуск main через Maven -->
+            <!-- Для запуска main -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.2.0</version> <!-- меняем на актуальную -->
+                <version>3.2.0</version>
                 <configuration>
-                    <mainClass>ru.java.java_kanban.Main</mainClass><!-- замени на свой -->
+                    <mainClass>ru.java.java_kanban.Main</mainClass>
                 </configuration>
+            </plugin>
+
+            <!-- Для проверки Checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <failOnViolation>false</failOnViolation> <!-- ВАЖНО! -->
+                    <propertyExpansion>true</propertyExpansion>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>false</failsOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

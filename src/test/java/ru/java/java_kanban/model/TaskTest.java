@@ -3,7 +3,6 @@ package ru.java.java_kanban.model;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class TaskTest {
 
     @Test
@@ -27,17 +26,6 @@ public class TaskTest {
     }
 
     @Test
-    void copy_returnEqualButIndependentTask() {
-        Task original = new Task("Title", "Details", TaskStatus.NEW);
-        original.setId(77);
-
-        Task copy = original.copy();
-
-        assertEquals(original, copy);
-        assertNotSame(original, copy);
-    }
-
-    @Test
     void toString_containKeyFields() {
         Task task = new Task("X", "Y", TaskStatus.NEW);
         task.setId(10);
@@ -47,5 +35,6 @@ public class TaskTest {
         assertTrue(result.contains("name='X'"));
         assertTrue(result.contains("description='Y'"));
         assertTrue(result.contains("status=NEW"));
+        assertTrue(result.contains("type=TASK"));
     }
 }

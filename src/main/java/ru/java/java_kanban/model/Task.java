@@ -59,6 +59,11 @@ public class Task {
         return duration;
     }
 
+    public Long getDurationMinutes() {
+        return duration == null ? null : duration.toMinutes();
+    }
+
+
     public Optional<Duration> getDurationOptional() {
         return Optional.ofNullable(duration);
     }

@@ -200,7 +200,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask addSubtask(Subtask subtask) {
 
-        Integer epicId = Subtask.getEpicId();
+        Integer epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
             System.out.println("error! there is no epic for this task !" + epicId + "not found.");
@@ -218,19 +218,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask updatedSubtask) {
-        if (subtasks.containsKey(updatedSubtask.getId())) {
-            subtasks.put(updatedSubtask.getId(), updatedSubtask);
-            updateEpicStatus(Subtask.getEpicId());
+    public void updateSubtask(Subtask subtask) {
+        if (subtasks.containsKey(subtask.getId())) {
+            subtasks.put(subtask.getId(), subtask);
+            updateEpicStatus(subtask.getEpicId());
         }
     }
 
     @Override
     public void deleteSubtaskById(Integer id) {
-        Subtask s = subtasks.remove(id);
-        if (s != null) {
+        Subtask subtask = subtasks.remove(id);
+        if (subtask != null) {
             historyManager.remove(id);
-            Epic epic = epics.get(Subtask.getEpicId());
+            Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
                 epic.getSubtaskIds().remove(id);
                 updateEpicStatus(epic.getId());

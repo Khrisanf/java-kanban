@@ -28,7 +28,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         List<String> lines = new ArrayList<>();
-        lines.add("id,type,name,status,description,epic");
+        lines.add("id,type,name,status,description,startTime,endTime,durationMinutes,epic");
 
         for (Task task : getAllTasks()) {
             lines.add(CsvConverter.toCsvString(task));
@@ -205,8 +205,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask updatedSubtask) {
-        super.updateSubtask(updatedSubtask);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 

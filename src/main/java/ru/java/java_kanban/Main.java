@@ -7,6 +7,7 @@ import ru.java.java_kanban.model.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -46,8 +47,11 @@ public class Main {
     private static void createScenario(TaskManager manager) {
         System.out.println("=== ДОБАВЛЕНИЕ ЗАДАЧ ===");
         Task task1 = new Task("Moving out", "Pack boxes", TaskStatus.NEW);
-        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW);
+        task1.setStartTime(LocalDateTime.of(2025, 8, 19, 10, 0)); // 19 августа 2025, 10:00
+        task1.setDurationMinutes(90L);                              // 1ч 30м; endTime = 11:30
         manager.addTask(task1);
+
+        Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW);
         manager.addTask(task2);
 
         Epic epic1 = new Epic("Moving out to another town", "Move to Tomsk");

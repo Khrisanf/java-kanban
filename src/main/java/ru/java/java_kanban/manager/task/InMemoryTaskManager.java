@@ -29,6 +29,29 @@ public class InMemoryTaskManager implements TaskManager {
         this.nextId = newNextId;
     }
 
+    protected void recalcAllEpics() {
+        for (Epic e : epics.values()) {
+            e.recalcFromSubtasks(subtasks);
+            updateEpicStatus(e.getId());
+        }
+    }
+
+    protected void rebuildPriorityIndex() {
+        priorityIndex.clearAll();
+        for (Task t : tasks.values()) {
+            priorityIndex.add(t);
+        }
+        for (Subtask s : subtasks.values()) {
+            priorityIndex.add(s);
+        }
+    }
+
+    protected void postLoadReinit() {
+        recalcAllEpics();
+        rebuildPriorityIndex();
+    }
+
+
     //All about Task
     @Override
     public List<Task> getAllTasks() {

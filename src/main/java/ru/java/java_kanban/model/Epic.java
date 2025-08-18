@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds = new ArrayList<>();
@@ -25,27 +26,28 @@ public class Epic extends Task {
         }
     }
 
-    public void recalcFromSubtasks(List<Subtask> subtasks) {
+    public void recalcFromSubtasks(Map<Integer, Subtask> subtasks) {
         long totalMinutes = 0;
         LocalDateTime minStart = null;
         LocalDateTime maxEnd = null;
 
-        if (subtasks != null) {
-            for (Subtask subtask : subtasks) {
+        if (subtasks != null && !subtaskIds.isEmpty()) {
+            for (Integer subtaskId : subtaskIds) {
+                Subtask subtask = subtasks.get(subtaskId);
+                if (subtask == null) {
+                    continue;
+                }
+
                 if (subtask.getDuration() != null) {
-                    totalMinutes += subtask.getDuration().toMinutes();
+                   totalMinutes += subtask.getDuration().toMinutes();
                 }
-
-                if (subtask.getStartTime() != null) {
-                    if (minStart == null || minStart.isAfter(subtask.getStartTime())) {
-                        minStart = subtask.getStartTime();
-                    }
+                LocalDateTime startTime = subtask.getStartTime();
+                if (startTime != null && (minStart == null || startTime.isBefore(minStart))) {
+                    minStart = startTime;
                 }
-
-                if (subtask.getEndTime() != null) {
-                    if (maxEnd == null || maxEnd.isBefore(subtask.getEndTime())) {
-                        maxEnd = subtask.getEndTime();
-                    }
+                LocalDateTime endTime = subtask.getEndTime();
+                if (endTime != null && (maxEnd == null || endTime.isAfter(maxEnd))) {
+                    maxEnd = endTime;
                 }
             }
         }
@@ -86,6 +88,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public Long getDurationMinutes() {
+        return duration == null ? null : duration.toMinutes();
+    }
+
+    @Override
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
@@ -112,6 +119,8 @@ public class Epic extends Task {
         copy.setId(this.getId());
         copy.setStatus(getStatus());
         copy.setSubtaskIds(new ArrayList<>(getSubtaskIds()));
+        copy.setStartTime(getStartTime());
+        copy.setDuration(getDuration());
         return copy;
     }
 }

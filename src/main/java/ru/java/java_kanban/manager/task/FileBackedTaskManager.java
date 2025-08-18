@@ -131,6 +131,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int maxId = parseTaskIds(taskLines);
             parseHistory(reader);
             setNextId(maxId + 1);
+            postLoadReinit();
             System.out.println("File loaded successfully! " + file.getFileName());
 
         } catch (IOException e) {

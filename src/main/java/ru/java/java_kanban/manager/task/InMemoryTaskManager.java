@@ -7,6 +7,7 @@ import ru.java.java_kanban.model.Epic;
 import ru.java.java_kanban.model.Subtask;
 import ru.java.java_kanban.model.Task;
 import ru.java.java_kanban.model.TaskStatus;
+import ru.java.java_kanban.util.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Map<Integer, Subtask> subtasks = new HashMap<>();
     private int nextId = 1;
     private PriorityIndex priorityIndex = new TreeSetPriorityIndex();
+    public TimeUtils timeUtils = new TimeUtils();
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -51,7 +53,6 @@ public class InMemoryTaskManager implements TaskManager {
         rebuildPriorityIndex();
     }
 
-
     //All about Task
     @Override
     public List<Task> getAllTasks() {
@@ -78,6 +79,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task addTask(Task task) {
+        if (task.getStartTime() != null && task.getEndTime() != null) {
+            for (Task existing : tasks.values()) {
+                if (timeUtils.isOverlapping(task.getStartTime(), task.getDuration(),
+                        existing.getStartTime(), existing.getDuration())) {
+                    throw new IllegalArgumentException("tasks are overlapping");
+                }
+            }
+
+            for (Subtask subtask : subtasks.values()) {
+                if (timeUtils.isOverlapping(task.getStartTime(), task.getDuration(),
+                        subtask.getStartTime(), subtask.getDuration())) {
+                    throw new IllegalArgumentException("subtask and task are overlapping");
+                }
+            }
+        }
+
         task.setId(nextId++);
         tasks.put(task.getId(), task);
         priorityIndex.add(task);
@@ -99,6 +116,25 @@ public class InMemoryTaskManager implements TaskManager {
         if (old == null) {
             return;
         }
+
+        if (!(task.getId().equals(old.getId()))
+                && task.getStartTime() != null
+                && task.getDuration() != null) {
+            for (Task existing : tasks.values()) {
+                if (timeUtils.isOverlapping(old.getStartTime(), old.getDuration(),
+                        existing.getStartTime(), existing.getDuration())) {
+                    throw new IllegalArgumentException("tasks are overlapping");
+                }
+            }
+
+            for (Subtask subtask : subtasks.values()) {
+                if (timeUtils.isOverlapping(task.getStartTime(), task.getDuration(),
+                        subtask.getStartTime(), subtask.getDuration())) {
+                    throw new IllegalArgumentException("subtask and task are overlapping");
+                }
+            }
+        }
+
         priorityIndex.replace(old, task);
         tasks.put(task.getId(), task);
     }
@@ -238,12 +274,29 @@ public class InMemoryTaskManager implements TaskManager {
         Integer epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            System.out.println("error! there is no epic for this task !" + epicId + "not found.");
+            System.out.println("error! there is no epic for this task !" +
+                    epicId + "not found.");
             return null;
         }
 
         int id = nextId++;
         subtask.setId(id);
+        if (subtask.getStartTime() != null && subtask.getEndTime() != null) {
+            for (Subtask existingSubtask : subtasks.values()) {
+                if (timeUtils.isOverlapping(subtask.getStartTime(), subtask.getDuration(),
+                        existingSubtask.getStartTime(), existingSubtask.getDuration())) {
+                    throw new IllegalArgumentException("subtasks are overlapping");
+                }
+            }
+
+            for (Task task : tasks.values()) {
+                if (timeUtils.isOverlapping(subtask.getStartTime(), subtask.getDuration(),
+                        task.getStartTime(), task.getDuration())) {
+                    throw new IllegalArgumentException("subtasks and task are overlapping");
+                }
+            }
+        }
+
         subtasks.put(subtask.getId(), subtask);
         priorityIndex.add(subtask);
 
@@ -259,6 +312,24 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask oldSubtask = subtasks.get(subtask.getId());
         if (oldSubtask == null) {
             return;
+        }
+
+        if (!(subtask.getId().equals(oldSubtask.getId()))
+                && subtask.getStartTime() != null
+                && subtask.getDuration() != null) {
+            for (Subtask existingSubtask : subtasks.values()) {
+                if (timeUtils.isOverlapping(subtask.getStartTime(), subtask.getDuration(),
+                        existingSubtask.getStartTime(), existingSubtask.getDuration())) {
+                    throw new IllegalArgumentException("subtasks are overlapping");
+                }
+            }
+
+            for (Task task : tasks.values()) {
+                if (timeUtils.isOverlapping(subtask.getStartTime(), subtask.getDuration(),
+                        task.getStartTime(), task.getDuration())) {
+                    throw new IllegalArgumentException("subtasks and task are overlapping");
+                }
+            }
         }
 
         priorityIndex.replace(oldSubtask, subtask);

@@ -28,7 +28,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         List<String> lines = new ArrayList<>();
-        lines.add("id,type,name,status,description,epic");
+        lines.add("id,type,name,status,description,startTime,endTime,durationMinutes,epic");
 
         for (Task task : getAllTasks()) {
             lines.add(CsvConverter.toCsvString(task));
@@ -131,6 +131,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int maxId = parseTaskIds(taskLines);
             parseHistory(reader);
             setNextId(maxId + 1);
+            postLoadReinit();
             System.out.println("File loaded successfully! " + file.getFileName());
 
         } catch (IOException e) {
@@ -205,8 +206,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask updatedSubtask) {
-        super.updateSubtask(updatedSubtask);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 

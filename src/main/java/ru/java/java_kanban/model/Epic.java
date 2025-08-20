@@ -1,10 +1,17 @@
 package ru.java.java_kanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds = new ArrayList<>();
+    private Duration duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
@@ -19,6 +26,39 @@ public class Epic extends Task {
         }
     }
 
+    public void recalcFromSubtasks(Map<Integer, Subtask> subtasks) {
+        long totalMinutes = 0;
+        LocalDateTime minStart = null;
+        LocalDateTime maxEnd = null;
+
+        if (subtasks != null && !subtaskIds.isEmpty()) {
+            for (Integer subtaskId : subtaskIds) {
+                Subtask subtask = subtasks.get(subtaskId);
+                if (subtask == null) {
+                    continue;
+                }
+
+                if (subtask.getDuration() != null) {
+                   totalMinutes += subtask.getDuration().toMinutes();
+                }
+                LocalDateTime startTime = subtask.getStartTime();
+                if (startTime != null && (minStart == null || startTime.isBefore(minStart))) {
+                    minStart = startTime;
+                }
+                LocalDateTime endTime = subtask.getEndTime();
+                if (endTime != null && (maxEnd == null || endTime.isAfter(maxEnd))) {
+                    maxEnd = endTime;
+                }
+            }
+        }
+
+        this.duration = (totalMinutes > 0)
+                ? Duration.ofMinutes(totalMinutes)
+                : null;
+        this.startTime = minStart;
+        this.endTime = maxEnd;
+    }
+
     @Override
     public TaskType getType() {
         return TaskType.EPIC;
@@ -30,6 +70,36 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> ids) {
         this.subtaskIds = ids;
+    }
+
+    @Override
+    public Duration getDuration() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public Long getDurationMinutes() {
+        return duration == null ? null : duration.toMinutes();
+    }
+
+    @Override
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     @Override
@@ -49,6 +119,8 @@ public class Epic extends Task {
         copy.setId(this.getId());
         copy.setStatus(getStatus());
         copy.setSubtaskIds(new ArrayList<>(getSubtaskIds()));
+        copy.setStartTime(getStartTime());
+        copy.setDuration(getDuration());
         return copy;
     }
 }

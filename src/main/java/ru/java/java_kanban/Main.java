@@ -91,7 +91,7 @@ public class Main {
         log("Добавлена задача: %s", fmtTask(task1));
 
         Task task2 = new Task("Studying", "Pass the module about Java", TaskStatus.NEW);
-        task2.setStartTime(LocalDateTime.of(2025, 8, 19, 10, 0));
+        task2.setStartTime(LocalDateTime.of(2025, 8, 21, 10, 0));
         task2.setDurationMinutes(90L);
         manager.addTask(task2);
         log("Добавлена задача: %s", fmtTask(task2));
@@ -112,7 +112,7 @@ public class Main {
         log("Добавлен эпик: %s", fmtTask(epic2));
 
         Subtask subtask3 = new Subtask("Pass java", "Pass projects", TaskStatus.NEW, epic2.getId());
-        subtask3.setStartTime(LocalDateTime.of(2025, 8, 19, 10, 0));
+        subtask3.setStartTime(LocalDateTime.of(2025, 8, 22, 10, 0));
         subtask3.setDurationMinutes(70L);
         manager.addSubtask(subtask3);
         log("Добавлена подзадача: %s (эпик #%d)", fmtTask(subtask3), epic2.getId());

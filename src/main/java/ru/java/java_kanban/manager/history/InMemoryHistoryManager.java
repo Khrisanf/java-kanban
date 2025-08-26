@@ -2,10 +2,8 @@ package ru.java.java_kanban.manager.history;
 
 import ru.java.java_kanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -60,13 +58,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        List<Task> history = new ArrayList<>();
-        Node current = head;
-        while (current != null) {
-            history.add(current.task);
-            current = current.next;
-        }
-        return history;
+        return Stream.iterate(head, Objects::nonNull, node -> node.next)
+                .map(node -> node.task)
+                .toList();
     }
 
     @Override

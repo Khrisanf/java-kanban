@@ -2,9 +2,7 @@ package ru.java.java_kanban.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds = new ArrayList<>();
@@ -32,24 +30,29 @@ public class Epic extends Task {
         LocalDateTime maxEnd = null;
 
         if (subtasks != null && !subtaskIds.isEmpty()) {
-            for (Integer subtaskId : subtaskIds) {
-                Subtask subtask = subtasks.get(subtaskId);
-                if (subtask == null) {
-                    continue;
-                }
+            totalMinutes = subtaskIds.stream()
+                    .map(subtasks::get)
+                    .filter(Objects::nonNull)
+                    .map(Subtask::getDuration)
+                    .filter(Objects::nonNull)
+                    .mapToLong(Duration::toMinutes)
+                    .sum();
 
-                if (subtask.getDuration() != null) {
-                   totalMinutes += subtask.getDuration().toMinutes();
-                }
-                LocalDateTime startTime = subtask.getStartTime();
-                if (startTime != null && (minStart == null || startTime.isBefore(minStart))) {
-                    minStart = startTime;
-                }
-                LocalDateTime endTime = subtask.getEndTime();
-                if (endTime != null && (maxEnd == null || endTime.isAfter(maxEnd))) {
-                    maxEnd = endTime;
-                }
-            }
+            minStart = subtaskIds.stream()
+                    .map(subtasks::get)
+                    .filter(Objects::nonNull)
+                    .map(Subtask::getStartTime)
+                    .filter(Objects::nonNull)
+                    .min(LocalDateTime::compareTo)
+                    .orElse(null);
+
+            maxEnd = subtaskIds.stream()
+                    .map(subtasks::get)
+                    .filter(Objects::nonNull)
+                    .map(Subtask::getEndTime)
+                    .filter(Objects::nonNull)
+                    .max(LocalDateTime::compareTo)
+                    .orElse(null);
         }
 
         this.duration = (totalMinutes > 0)

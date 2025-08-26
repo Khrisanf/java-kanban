@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -30,17 +31,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         List<String> lines = new ArrayList<>();
         lines.add("id,type,name,status,description,startTime,endTime,durationMinutes,epic");
 
-        for (Task task : getAllTasks()) {
-            lines.add(CsvConverter.toCsvString(task));
-        }
+        lines.addAll(getAllTasks().stream()
+                .map(CsvConverter::toCsvString)
+                .toList());
 
-        for (Epic epic : getAllEpics()) {
-            lines.add(CsvConverter.toCsvString(epic));
-        }
+        lines.addAll(getAllEpics().stream()
+                .map(CsvConverter::toCsvString)
+                .toList());
 
-        for (Subtask subtask : getAllSubtasks()) {
-            lines.add(CsvConverter.toCsvString(subtask));
-        }
+        lines.addAll(getAllSubtasks().stream()
+                .map(CsvConverter::toCsvString)
+                .toList());
+
 
         try {
             Files.write(file,
@@ -63,36 +65,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private int parseTaskIds(List<String> lines) {
-        int maxId = 0;
+        //final int maxId = 0;
         Map<Integer, Task> tasksToRestore = new HashMap<>();
         List<Subtask> subtasksToRestore = new ArrayList<>();
 
-        for (String line : lines) {
-            Task task = CsvConverter.fromCvsString(line);
-            maxId = Math.max(maxId, task.getId());
+        List<Task> parsed = lines.stream()
+                .map(CsvConverter::fromCvsString)
+                .toList();
 
+        int maxId = parsed.stream()
+                .mapToInt(Task::getId)
+                .max()
+                .orElse(0);
+
+        parsed.forEach(task -> {
             if (Objects.requireNonNull(task.getType()) == TaskType.SUBTASK) {
                 subtasksToRestore.add((Subtask) task);
             } else {
                 tasksToRestore.put(task.getId(), task);
             }
-        }
+        });
 
-        for (Task task : tasksToRestore.values()) {
+        tasksToRestore.values().forEach(task -> {
             if (task.getType() == TaskType.TASK) {
                 this.tasks.put(task.getId(), task);
             } else if (task.getType() == TaskType.EPIC) {
-                Epic epic = (Epic) task;
-                this.epics.put(epic.getId(), epic);
+                this.epics.put(task.getId(), (Epic) task);
             } else {
                 throw new ManagerSaveException("Invalid task type");
             }
-        }
+        });
 
-
-        for (Subtask subtask : subtasksToRestore) {
+        subtasksToRestore.forEach(subtask -> {
             this.subtasks.put(subtask.getId(), subtask);
-
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
                 epic.addSubtaskIds(subtask.getId());
@@ -101,7 +106,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
                         + " has missed: there is no epic with id=" + subtask.getEpicId());
             }
-        }
+        });
+
         return maxId;
     }
 
@@ -110,13 +116,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         if ((line = reader.readLine()) != null && !line.isBlank()) {
             String[] fields = line.split(",");
-            for (String field : fields) {
-                int id = Integer.parseInt(field.trim());
-                Task task = getTaskById(id);
-                if (task != null) {
-                    historyManager.add(task);
-                }
-            }
+            Stream.of(fields)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .map(this::getTaskById)
+                    .filter(Objects::nonNull)
+                    .forEach(historyManager::add);
         }
     }
 

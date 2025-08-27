@@ -1,6 +1,9 @@
 package ru.java.java_kanban.model;
 
 import org.junit.jupiter.api.Test;
+import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
+import ru.java.java_kanban.manager.task.InMemoryTaskManager;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
@@ -44,4 +47,53 @@ public class EpicTest {
         assertTrue(result.contains("5"));
     }
 
+    // BOUNDARY VALUES
+    @Test
+    public void status_returnsNew_allSubtasksNew() {
+        InMemoryTaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        Epic epic = new Epic("E", "D");
+        epic = manager.addEpic(epic);
+
+        manager.addSubtask(new Subtask("S1", "D", TaskStatus.NEW, epic.getId()));
+        manager.addSubtask(new Subtask("S2", "D", TaskStatus.NEW, epic.getId()));
+
+        Epic stored = manager.getEpicById(epic.getId());
+        assertEquals(TaskStatus.NEW, stored.getStatus());
+    }
+
+    @Test
+    public void status_returnsDone_allSubtasksDone() {
+        InMemoryTaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        Epic epic = manager.addEpic(new Epic("E", "D"));
+
+        manager.addSubtask(new Subtask("S1", "D", TaskStatus.DONE, epic.getId()));
+        manager.addSubtask(new Subtask("S2", "D", TaskStatus.DONE, epic.getId()));
+
+        Epic stored = manager.getEpicById(epic.getId());
+        assertEquals(TaskStatus.DONE, stored.getStatus());
+    }
+
+    @Test
+    public void status_returnsInProgress_mixOfNewAndDone() {
+        InMemoryTaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        Epic epic = manager.addEpic(new Epic("E", "D"));
+
+        manager.addSubtask(new Subtask("S1", "D", TaskStatus.NEW, epic.getId()));
+        manager.addSubtask(new Subtask("S2", "D", TaskStatus.DONE, epic.getId()));
+
+        Epic stored = manager.getEpicById(epic.getId());
+        assertEquals(TaskStatus.IN_PROGRESS, stored.getStatus());
+    }
+
+    @Test
+    public void status_returnsInProgress_anySubtaskInProgress() {
+        InMemoryTaskManager manager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        Epic epic = manager.addEpic(new Epic("E", "D"));
+
+        manager.addSubtask(new Subtask("S1", "D", TaskStatus.IN_PROGRESS, epic.getId()));
+        manager.addSubtask(new Subtask("S2", "D", TaskStatus.NEW, epic.getId()));
+
+        Epic stored = manager.getEpicById(epic.getId());
+        assertEquals(TaskStatus.IN_PROGRESS, stored.getStatus());
+    }
 }

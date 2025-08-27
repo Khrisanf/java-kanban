@@ -1,114 +1,72 @@
 package ru.java.java_kanban.task;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import ru.java.java_kanban.manager.ManagerSaveException;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
 import ru.java.java_kanban.manager.task.FileBackedTaskManager;
-import ru.java.java_kanban.model.*;
+import ru.java.java_kanban.model.Task;
+import ru.java.java_kanban.model.TaskStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    private FileBackedTaskManager manager;
-    private Path testFile;
+    @TempDir
+    Path tempDir;
 
-    @BeforeEach
-    void setUp() throws IOException {
-        testFile = Files.createTempFile("tasks", ".csv");
-        manager = new FileBackedTaskManager(new InMemoryHistoryManager(), testFile);
+    private Path backingFile;
+
+    @Override
+    protected FileBackedTaskManager createManager() {
+        backingFile = tempDir.resolve("tasks.csv");
+        return new FileBackedTaskManager(new InMemoryHistoryManager(), backingFile);
     }
 
-    @AfterEach
-    void tearDown() throws IOException {
-        Files.deleteIfExists(testFile);
-    }
-
-    // === TASK TESTS ===
     @Nested
-    class TaskTest {
+    class Persistence {
 
         @Test
-        void addTask_savesTaskToFile() throws IOException {
-            Task task = new Task("Test", "Description", TaskStatus.NEW);
-            manager.addTask(task);
+        public void saveAndLoad_roundTrip_preservesData() {
+            Task t = manager.addTask(new Task("Persist", "D", TaskStatus.NEW));
+            FileBackedTaskManager reloaded =
+                    new FileBackedTaskManager(new InMemoryHistoryManager(), backingFile);
 
-            List<String> lines = Files.readAllLines(testFile);
-            assertTrue(lines.stream().anyMatch(line -> line.contains("Test")));
+            Task restored = reloaded.getTaskById(t.getId());
+            assertNotNull(restored);
+            assertEquals(t.getName(), restored.getName());
+            assertEquals(t.getDescription(), restored.getDescription());
+            assertEquals(t.getStatus(), restored.getStatus());
         }
 
         @Test
-        void updateTask_updatesFileAfterChange() throws IOException {
-            Task task = manager.addTask(new Task("Test", "Desc", TaskStatus.NEW));
-            task.setStatus(TaskStatus.DONE);
-            manager.updateTask(task);
+        public void write_updatesFile_onAddUpdateDelete() throws IOException {
+            Task t = manager.addTask(new Task("A", "D", TaskStatus.NEW));
+            String content1 = Files.readString(backingFile);
+            assertTrue(content1.contains("A"));
 
-            String content = Files.readString(testFile);
-            assertTrue(content.contains("DONE"));
+            t.setName("B");
+            manager.updateTask(t);
+            String content2 = Files.readString(backingFile);
+            assertTrue(content2.contains("B"));
+
+            manager.deleteTaskById(t.getId());
+            String content3 = Files.readString(backingFile);
+            assertFalse(content3.contains("B"));
         }
 
         @Test
-        void deleteTaskById_removesFromFile() throws IOException {
-            Task task = manager.addTask(new Task("To delete", "Desc", TaskStatus.NEW));
-            manager.deleteTaskById(task.getId());
+        public void loadFromCorruptedFile_throwsManagerSaveException() throws IOException {
+            Path broken = tempDir.resolve("broken.csv");
+            Files.writeString(broken, "id,type,name,status,start,duration,epic\nXXX;WRONG");
 
-            String content = Files.readString(testFile);
-            assertFalse(content.contains("To delete"));
-        }
-    }
-
-    // === EPIC TESTS ===
-    @Nested
-    class EpicTest {
-
-        @Test
-        void addEpic_savesEpicAndSubtasksToFile() throws IOException {
-            Epic epic = manager.addEpic(new Epic("Epic name", "Epic desc"));
-            manager.addSubtask(new Subtask("Sub", "Desc", TaskStatus.NEW, epic.getId()));
-
-            String content = Files.readString(testFile);
-            assertTrue(content.contains("Epic name"));
-            assertTrue(content.contains("Sub"));
-        }
-
-        @Test
-        void deleteAllEpics_clearsFile() throws IOException {
-            Epic epic = manager.addEpic(new Epic("Epic", "Desc"));
-            manager.addSubtask(new Subtask("S", "D", TaskStatus.NEW, epic.getId()));
-
-            manager.deleteAllEpics();
-
-            String content = Files.readString(testFile);
-            assertFalse(content.contains("Epic"));
-        }
-    }
-
-    // === SUBTASK TESTS ===
-    @Nested
-    class SubtaskTest {
-
-        @Test
-        void addSubtask_savesToFile() throws IOException {
-            Epic epic = manager.addEpic(new Epic("Epic", "Desc"));
-            Subtask subtask = new Subtask("Sub", "Desc", TaskStatus.NEW, epic.getId());
-            manager.addSubtask(subtask);
-
-            String content = Files.readString(testFile);
-            assertTrue(content.contains("Sub"));
-        }
-
-        @Test
-        void deleteSubtaskById_updatesFile() throws IOException {
-            Epic epic = manager.addEpic(new Epic("Epic", "Desc"));
-            Subtask subtask = manager.addSubtask(new Subtask("Sub", "Desc", TaskStatus.NEW, epic.getId()));
-
-            manager.deleteSubtaskById(subtask.getId());
-            String content = Files.readString(testFile);
-            assertFalse(content.contains("Sub"));
+            assertThrows(NumberFormatException.class, () ->
+                    new FileBackedTaskManager(new InMemoryHistoryManager(), broken));
         }
     }
 }

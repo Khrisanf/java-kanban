@@ -68,5 +68,11 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             assertThrows(NumberFormatException.class, () ->
                     new FileBackedTaskManager(new InMemoryHistoryManager(), broken));
         }
+
+        @Test
+        public void createOnEmptyFile_doesNotThrow() {
+            assertDoesNotThrow(() ->
+                    new FileBackedTaskManager(new InMemoryHistoryManager(), backingFile));
+        }
     }
 }

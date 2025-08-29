@@ -65,7 +65,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private int parseTaskIds(List<String> lines) {
-        //final int maxId = 0;
         Map<Integer, Task> tasksToRestore = new HashMap<>();
         List<Subtask> subtasksToRestore = new ArrayList<>();
 

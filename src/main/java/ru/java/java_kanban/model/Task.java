@@ -97,7 +97,7 @@ public class Task {
         if (startTime == null || duration == null) {
             return null;
         }
-        return startTime.plus(duration);
+        return getStartTime().plus(getDuration());
     }
 
     public Task copy() {
@@ -138,5 +138,9 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean hasSchedule() {
+        return getStartTime() != null && getDuration() != null;
     }
 }

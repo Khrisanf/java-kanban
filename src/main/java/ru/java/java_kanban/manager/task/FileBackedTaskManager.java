@@ -87,17 +87,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         tasksToRestore.values().forEach(task -> {
             if (task.getType() == TaskType.TASK) {
-                this.tasks.put(task.getId(), task);
+                this.getTasks().put(task.getId(), task);
             } else if (task.getType() == TaskType.EPIC) {
-                this.epics.put(task.getId(), (Epic) task);
+                this.getEpics().put(task.getId(), (Epic) task);
             } else {
                 throw new ManagerSaveException("Invalid task type");
             }
         });
 
         subtasksToRestore.forEach(subtask -> {
-            this.subtasks.put(subtask.getId(), subtask);
-            Epic epic = epics.get(subtask.getEpicId());
+            this.getSubtasks().put(subtask.getId(), subtask);
+            Epic epic = getEpics().get(subtask.getEpicId());
             if (epic != null) {
                 epic.addSubtaskIds(subtask.getId());
                 updateEpicStatus(epic.getId());
@@ -136,7 +136,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int maxId = parseTaskIds(taskLines);
             parseHistory(reader);
             setNextId(maxId + 1);
-            postLoadReinit();
             System.out.println("File loaded successfully! " + file.getFileName());
 
         } catch (IOException e) {

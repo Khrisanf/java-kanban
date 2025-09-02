@@ -1,12 +1,11 @@
 package ru.java.java_kanban.model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds = new ArrayList<>();
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -33,16 +32,6 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> ids) {
         this.subtaskIds = ids;
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    @Override
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
     }
 
     @Override

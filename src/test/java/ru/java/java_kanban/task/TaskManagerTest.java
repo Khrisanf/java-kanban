@@ -281,7 +281,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             Task t3 = manager.addTask(timedTask(1, 12, 0, 30));
 
             Set<Task> ordered = manager.prioritizedTasks();
-            assertEquals(List.of(t1, t2, t3), ordered);
+            assertArrayEquals(
+                    new Task[]{t1, t2, t3},
+                    ordered.toArray(new Task[0])
+            );
         }
 
         @Test
@@ -302,7 +305,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 manager.addTask(b);
             });
 
-            assertEquals(List.of(a, b), manager.prioritizedTasks());
+            assertArrayEquals(new Task[]{a, b},
+                    manager.prioritizedTasks().toArray(Task[]::new));
         }
 
         @Test

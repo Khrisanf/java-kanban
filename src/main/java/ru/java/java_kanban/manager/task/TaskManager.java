@@ -5,9 +5,8 @@ import ru.java.java_kanban.model.Epic;
 import ru.java.java_kanban.model.Subtask;
 import ru.java.java_kanban.model.Task;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     //All about Task
@@ -53,5 +52,5 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    List<Task> getPrioritizedTasks();
+    Set<Task> prioritizedTasks();
 }

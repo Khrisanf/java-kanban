@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
 
@@ -53,7 +54,7 @@ public class Main {
         m.getAllSubtasks().forEach(s -> System.out.println("  " + fmtTask(s)));
 
         System.out.println("\n— Приоритизированный список —");
-        List<Task> pr = m.getPrioritizedTasks();
+        Set<Task> pr = m.prioritizedTasks();
         if (pr.isEmpty()) {
             System.out.println("  (пусто: нет задач со startTime)");
         } else {

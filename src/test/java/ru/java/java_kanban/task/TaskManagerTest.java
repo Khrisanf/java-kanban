@@ -9,6 +9,7 @@ import ru.java.java_kanban.model.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,7 +95,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             manager.deleteAllTasks();
 
             assertTrue(manager.getAllTasks().isEmpty());
-            assertTrue(manager.getPrioritizedTasks().isEmpty());
+            assertTrue(manager.prioritizedTasks().isEmpty());
             assertTrue(manager.getHistory().isEmpty());
         }
     }
@@ -279,7 +280,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             Task t1 = manager.addTask(timedTask(1, 8, 0, 30));
             Task t3 = manager.addTask(timedTask(1, 12, 0, 30));
 
-            List<Task> ordered = manager.getPrioritizedTasks();
+            Set<Task> ordered = manager.prioritizedTasks();
             assertEquals(List.of(t1, t2, t3), ordered);
         }
 
@@ -301,7 +302,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 manager.addTask(b);
             });
 
-            assertEquals(List.of(a, b), manager.getPrioritizedTasks());
+            assertEquals(List.of(a, b), manager.prioritizedTasks());
         }
 
         @Test

@@ -87,20 +87,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         tasksToRestore.values().forEach(task -> {
             if (task.getType() == TaskType.TASK) {
-                this.getTasks().put(task.getId(), task);
+                this.tasks.put(task.getId(), task);
             } else if (task.getType() == TaskType.EPIC) {
-                this.getEpics().put(task.getId(), (Epic) task);
+                this.epics.put(task.getId(), (Epic) task);
             } else {
                 throw new ManagerSaveException("Invalid task type");
             }
         });
 
         subtasksToRestore.forEach(subtask -> {
-            this.getSubtasks().put(subtask.getId(), subtask);
-            Epic epic = getEpics().get(subtask.getEpicId());
+            this.subtasks.put(subtask.getId(), subtask);
+            Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
                 epic.addSubtaskIds(subtask.getId());
-                updateEpicStatus(epic.getId());
+                recalcEpic(epic);
             } else {
                 throw new BrokenTaskLinkException("⚠ Subtask " + subtask.getId()
                         + " has missed: there is no epic with id=" + subtask.getEpicId());

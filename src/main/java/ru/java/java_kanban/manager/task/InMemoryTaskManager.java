@@ -16,6 +16,11 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     private int nextId = 1;
+    private final Set<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(Task::getStartTime)
+                    .thenComparing(Task::getEndTime)
+                    .thenComparingInt(Task::getId)
+    );
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -25,14 +30,22 @@ public class InMemoryTaskManager implements TaskManager {
         this.nextId = newNextId;
     }
 
-    // сумма длительностей в минутах
-    private long getTotalDuration(List<Subtask> sts) {
-        return sts.stream()
+    // сумма длительностей
+    private Duration getTotalDuration(List<Subtask> sts) {
+        boolean anyDuration = sts.stream()
+                .anyMatch(st -> st != null
+                        && st.getDuration() != null);
+        if (!anyDuration) {
+            return null;
+        }
+        long minutes = sts.stream()
                 .map(Subtask::getDuration)
                 .filter(Objects::nonNull)
                 .mapToLong(Duration::toMinutes)
                 .sum();
+        return Duration.ofMinutes(minutes);
     }
+
 
     // минимальный старт и максимальный конец среди сабтасков
     private LocalDateTime getMinStart(List<Subtask> sts) {
@@ -51,31 +64,33 @@ public class InMemoryTaskManager implements TaskManager {
                 .orElse(null);
     }
 
+    private TaskStatus calculateEpicStatus(List<Subtask> sts) {
+        if (sts == null || sts.isEmpty()) {
+            return TaskStatus.NEW;               // пустой эпик = NEW
+        }
+
+        boolean allNew  = sts.stream().allMatch(s -> s.getStatus() == TaskStatus.NEW);
+        if (allNew) {
+            return TaskStatus.NEW;               // все NEW
+        }
+
+        boolean allDone = sts.stream().allMatch(s -> s.getStatus() == TaskStatus.DONE);
+        if (allDone) {
+            return TaskStatus.DONE;              // все DONE
+        }
+
+        // хотя бы один IN_PROGRESS
+        return TaskStatus.IN_PROGRESS;
+    }
+
+
     // оркестратор
     protected void recalcEpic(Epic epic) {
         List<Subtask> sts = getSubtasksOfEpic(epic.getId());
-        if (sts.isEmpty()) {
-            epic.setDuration(null);
-            epic.setStartTime(null);
-            epic.setEndTime(null);
-            epic.setStatus(TaskStatus.NEW);
-            return;
-        }
-
-        boolean hasAnyDuration = sts.stream()
-                .map(Subtask::getDuration)
-                .anyMatch(Objects::nonNull);
-
-        epic.setDuration(hasAnyDuration ? Duration.ofMinutes(getTotalDuration(sts)) : null);
+        epic.setDuration(getTotalDuration(sts));
         epic.setStartTime(getMinStart(sts));
         epic.setEndTime(getMaxEnd(sts));
-
-        boolean allNew  = sts.stream().allMatch(s -> s.getStatus() == TaskStatus.NEW);
-        boolean allDone = sts.stream().allMatch(s -> s.getStatus() == TaskStatus.DONE);
-
-        epic.setStatus(allDone ? TaskStatus.DONE
-                : allNew ? TaskStatus.NEW
-                : TaskStatus.IN_PROGRESS);
+        epic.setStatus(calculateEpicStatus(sts));
     }
 
     private static boolean hasOverlaps(Task x, Task y) {
@@ -100,12 +115,6 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(t -> !Objects.equals(t.getId(), candidate.getId()))
                 .anyMatch(other -> hasOverlaps(candidate, other)); // использует парный предикат
     }
-
-    private final Set<Task> prioritizedTasks = new TreeSet<>(
-            Comparator.comparing(Task::getStartTime)
-                    .thenComparing(Task::getEndTime)
-                    .thenComparingInt(Task::getId)
-    );
 
     //All about Task
     @Override

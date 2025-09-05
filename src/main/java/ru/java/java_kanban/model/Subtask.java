@@ -1,14 +1,14 @@
 package ru.java.java_kanban.model;
 
 public class Subtask extends Task {
-    private static Integer epicId;
+    private Integer epicId;
 
     public Subtask(String name,
                    String description,
                    TaskStatus status,
                    int epicId) {
         super(name, description, status);
-        Subtask.epicId = epicId;
+        this.epicId = epicId;
     }
 
     @Override
@@ -16,12 +16,12 @@ public class Subtask extends Task {
         return TaskType.SUBTASK;
     }
 
-    public static Integer getEpicId() {
+    public Integer getEpicId() {
         return epicId;
     }
 
     public void setEpicId(int epicId) {
-        Subtask.epicId = epicId;
+        this.epicId = epicId;
     }
 
     @Override

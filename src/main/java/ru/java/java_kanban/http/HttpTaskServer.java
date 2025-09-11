@@ -27,6 +27,9 @@ public class HttpTaskServer {
     public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress(requestedPort), 0);
         server.createContext("/tasks", new TaskHttpHandler(manager));
+        server.createContext("/epics", new EpicHttpHandler(manager));
+        server.createContext("/subtasks", new SubtaskHttpHandler(manager));
+
         server.start();
         boundPort = server.getAddress().getPort();
         System.out.println("HTTP server started on " + getBaseUrl());

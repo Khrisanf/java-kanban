@@ -1,4 +1,4 @@
-package ru.java.java_kanban;
+package ru.java.java_kanban.http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;

@@ -2,18 +2,16 @@ package ru.java.java_kanban.http;
 
 import com.sun.net.httpserver.HttpServer;
 import ru.java.java_kanban.manager.history.InMemoryHistoryManager;
-import ru.java.java_kanban.manager.task.TaskManager;
 import ru.java.java_kanban.manager.task.FileBackedTaskManager;
+import ru.java.java_kanban.manager.task.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class HttpTaskServer {
-    static int PORT = 8080;
-    static Path file = Path.of("tasks.csv");
-    static TaskManager manager = new FileBackedTaskManager(new InMemoryHistoryManager(), file);
-
+    private final TaskManager manager;
     private final int requestedPort;
     private HttpServer server;
     private int boundPort;
@@ -21,9 +19,8 @@ public class HttpTaskServer {
     public HttpTaskServer(TaskManager manager) {
         this(manager, 0);
     }
-
     public HttpTaskServer(TaskManager manager, int port) {
-        this.manager = manager;
+        this.manager = Objects.requireNonNull(manager, "HttpTaskServer: manager must not be null");
         this.requestedPort = port;
     }
 
@@ -46,7 +43,9 @@ public class HttpTaskServer {
     }
 
     public static void main(String[] args) throws IOException {
-        HttpTaskServer server = new HttpTaskServer(manager, PORT);
-        server.start();
+        int PORT = 8080;
+        Path file = Path.of("tasks.csv");
+        TaskManager mgr = new FileBackedTaskManager(new InMemoryHistoryManager(), file);
+        new HttpTaskServer(mgr, PORT).start();
     }
 }

@@ -3,6 +3,9 @@ package ru.java.java_kanban.http;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.java.java_kanban.exceptions.BadRequestException;
+import ru.java.java_kanban.exceptions.ConflictException;
+import ru.java.java_kanban.exceptions.NotFoundException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,8 +33,21 @@ public class BaseHttpHandler implements HttpHandler {
                 default:
                     sendJson(exchange, "method not allowed", 405);
             }
+        } catch (BadRequestException e) {
+            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 400);
+        } catch (NotFoundException e) {
+            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 404);
+        } catch (ConflictException e) {
+            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 409);
+        } catch (com.google.gson.JsonSyntaxException | java.time.format.DateTimeParseException e) {
+            sendJson(exchange, "{\"error\":\"bad json\"}", 400);
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("HTTP 500 at: " + e.getClass().getName());
+            for (StackTraceElement el : e.getStackTrace()) {
+                System.err.println("  at " + el);
+                break;
+            }
             sendJson(exchange, "{\"error\":\"server_error\"}", 500);
         } finally {
             exchange.close();

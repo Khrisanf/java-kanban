@@ -6,6 +6,8 @@ import ru.java.java_kanban.manager.task.TaskManager;
 import ru.java.java_kanban.model.Subtask;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class SubtaskHttpHandler extends BaseHttpHandler {
@@ -45,12 +47,17 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
                 sendJson(exchange, "bad id", 400);
                 return;
             }
-            sendJson(exchange, gson.toJson(manager.getSubtaskById(epicId)), 200);
+            List<Subtask> list = manager.getSubtasksOfEpic(epicId);
+            if (list == null) {
+                list = Collections.emptyList();
+            }
+            sendJson(exchange, gson.toJson(list), 200);
             return;
         }
 
         sendJson(exchange, gson.toJson(manager.getAllSubtasks()), 200);
     }
+
 
     @Override
     protected void toPost(HttpExchange exchange) throws IOException {
@@ -82,7 +89,6 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
                 sendJson(exchange, gson.toJson(subtask), 200);
             }
         } catch (IllegalArgumentException iae) {
-            // пересечения по времени/эпик не найден и т.п. — как в TaskHttpHandler
             sendHasInteractions(exchange);
         }
     }

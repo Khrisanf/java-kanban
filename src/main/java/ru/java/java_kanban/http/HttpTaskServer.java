@@ -30,6 +30,7 @@ public class HttpTaskServer {
         server.createContext("/epics", new EpicHttpHandler(manager));
         server.createContext("/subtasks", new SubtaskHttpHandler(manager));
         server.createContext("/history", new HistoryHttpHandler(manager));
+        server.createContext("/priority", new PrioritizedHttpHandler(manager));
 
         server.start();
         boundPort = server.getAddress().getPort();

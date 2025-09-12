@@ -29,6 +29,7 @@ public class HttpTaskServer {
         server.createContext("/tasks", new TaskHttpHandler(manager));
         server.createContext("/epics", new EpicHttpHandler(manager));
         server.createContext("/subtasks", new SubtaskHttpHandler(manager));
+        server.createContext("/history", new HistoryHttpHandler(manager));
 
         server.start();
         boundPort = server.getAddress().getPort();

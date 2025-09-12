@@ -17,12 +17,18 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     private int nextId = 1;
     private final Set<Task> prioritizedTasks = new TreeSet<>(
-            Comparator.comparing(Task::getStartTime)
-                    .thenComparing(Task::getEndTime)
+            Comparator
+                    .comparing(Task::getStartTime,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(Task::getEndTime,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparingInt(Task::getId)
     );
 
     public InMemoryTaskManager(HistoryManager historyManager) {
+        if (historyManager == null) {
+            throw new IllegalArgumentException("HistoryManager must not be null");
+        }
         this.historyManager = historyManager;
     }
 
@@ -154,7 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(Integer id) {
         Task task = tasks.remove(id);
-        if (task.hasSchedule()) {
+        if (task != null && task.hasSchedule()) {
             prioritizedTasks.remove(task);
         }
         historyManager.remove(id);

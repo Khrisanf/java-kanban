@@ -17,7 +17,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toGet(HttpExchange exchange) throws IOException {
+    protected void doGet(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr == null) {
             sendJson(exchange, gson.toJson(manager.getAllTasks()), 200);
@@ -39,7 +39,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toPost(HttpExchange exchange) throws IOException {
+    protected void doPost(HttpExchange exchange) throws IOException {
         String body = readBody(exchange);
         Task task;
         try {
@@ -78,7 +78,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
 
 
     @Override
-    protected void toDelete(HttpExchange exchange) throws IOException {
+    protected void doDelete(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr == null) {
             manager.deleteAllTasks();

@@ -16,7 +16,7 @@ public class PrioritizedHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toGet(HttpExchange exchange) throws IOException {
+    protected void doGet(HttpExchange exchange) throws IOException {
         sendJson(exchange, gson.toJson(manager.prioritizedTasks()), 200);
     }
 }

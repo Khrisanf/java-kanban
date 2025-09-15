@@ -16,7 +16,7 @@ public class HistoryHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toGet(HttpExchange exchange) throws IOException {
+    protected void doGet(HttpExchange exchange) throws IOException {
         sendJson(exchange, gson.toJson(manager.getHistory()), 200);
     }
 }

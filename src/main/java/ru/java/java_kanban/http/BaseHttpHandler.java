@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 public class BaseHttpHandler implements HttpHandler {
     @Override
@@ -19,55 +20,60 @@ public class BaseHttpHandler implements HttpHandler {
         try {
             switch (exchange.getRequestMethod()) {
                 case "GET":
-                    toGet(exchange);
+                    doGet(exchange);
                     break;
                 case "POST":
-                    toPost(exchange);
+                    doPost(exchange);
                     break;
                 case "PUT":
-                    toPut(exchange);
+                    doPut(exchange);
                     break;
                 case "DELETE":
-                    toDelete(exchange);
+                    doDelete(exchange);
                     break;
                 default:
-                    sendJson(exchange, "method not allowed", 405);
+                    methodNotAllowed(exchange);
             }
         } catch (BadRequestException e) {
-            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 400);
-        } catch (NotFoundException e) {
-            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 404);
+            sendError(exchange, 400, "BAD_REQUEST", e.getMessage());
         } catch (ConflictException e) {
-            sendJson(exchange, "{\"error\":\"" + e.getMessage() + "\"}", 409);
-        } catch (com.google.gson.JsonSyntaxException | java.time.format.DateTimeParseException e) {
-            sendJson(exchange, "{\"error\":\"bad json\"}", 400);
+            sendHasInteractions(exchange);
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (JsonSyntaxException | DateTimeParseException e) {
+            sendError(exchange, 400, "BAD_JSON", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("HTTP 500 at: " + e.getClass().getName());
-            for (StackTraceElement el : e.getStackTrace()) {
-                System.err.println("  at " + el);
-                break;
-            }
-            sendJson(exchange, "{\"error\":\"server_error\"}", 500);
+            sendError(exchange, 500, "SERVER_ERROR",
+                    "internal server error");
         } finally {
             exchange.close();
         }
     }
 
-    protected void toGet(HttpExchange exchange) throws IOException{
-        sendJson(exchange, "method not allowed", 405);
+    protected void doGet(HttpExchange exchange) throws IOException{
+        methodNotAllowed(exchange);
     }
 
-    protected void toPost(HttpExchange exchange) throws IOException{
-        sendJson(exchange, "method not allowed", 405);
+    protected void doPost(HttpExchange exchange) throws IOException{
+        methodNotAllowed(exchange);
     }
 
-    protected void toPut(HttpExchange exchange) throws IOException{
-        sendJson(exchange, "method not allowed", 405);
+    protected void doPut(HttpExchange exchange) throws IOException{
+        methodNotAllowed(exchange);
     }
 
-    protected void toDelete(HttpExchange exchange) throws IOException{
-        sendJson(exchange, "method not allowed", 405);
+    protected void doDelete(HttpExchange exchange) throws IOException{
+        methodNotAllowed(exchange);
+    }
+
+    protected void sendError(HttpExchange exchange, int status, String code, String message) throws IOException {
+        String json = gson().toJson(new ApiError(status, code, message));
+        sendJson(exchange, json, status);
+    }
+
+    protected void methodNotAllowed(HttpExchange exchange) throws IOException {
+        sendError(exchange, 405, "METHOD_NOT_ALLOWED", "method not allowed");
     }
 
     protected void sendJson(HttpExchange exchange, String json, int code) throws IOException {
@@ -80,24 +86,12 @@ public class BaseHttpHandler implements HttpHandler {
     }
 
     protected void sendNotFound(HttpExchange exchange) throws IOException {
-        String message = "not found";
-        byte[] response = message.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json;charset=utf-8");
-        exchange.sendResponseHeaders(404, response.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response);
-        }
+        sendError(exchange, 404, "NOT_FOUND", "not found");
     }
 
     // for overlaps task
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
-        String message = "not acceptable: overlap tasks";
-        byte[] response = message.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json;charset=utf-8");
-        exchange.sendResponseHeaders(406, response.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response);
-        }
+        sendError(exchange, 406, "OVERLAP", "not acceptable: overlap tasks");
     }
 
     protected void sendNoContent(HttpExchange ex) throws IOException {
@@ -122,6 +116,16 @@ public class BaseHttpHandler implements HttpHandler {
             }
         }
         return null;
+    }
+
+    // exception interception
+    protected int parseIdOrBadRequest(String id) {
+        try {
+            return Integer.parseInt(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("bad id");
+        }
+
     }
 
     public static Gson gson() {

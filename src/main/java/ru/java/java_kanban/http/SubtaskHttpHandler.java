@@ -19,7 +19,7 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toGet(HttpExchange exchange) throws IOException {
+    protected void doGet(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr != null) {
             int id;
@@ -60,7 +60,7 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
 
 
     @Override
-    protected void toPost(HttpExchange exchange) throws IOException {
+    protected void doPost(HttpExchange exchange) throws IOException {
         String body = readBody(exchange);
         Subtask subtask;
         try {
@@ -94,7 +94,7 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toDelete(HttpExchange exchange) throws IOException {
+    protected void doDelete(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr == null) {
             manager.deleteAllSubtasks();

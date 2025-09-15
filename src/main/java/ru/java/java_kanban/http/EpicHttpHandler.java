@@ -2,6 +2,8 @@ package ru.java.java_kanban.http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import ru.java.java_kanban.exceptions.BadRequestException;
+import ru.java.java_kanban.exceptions.NotFoundException;
 import ru.java.java_kanban.manager.task.TaskManager;
 import ru.java.java_kanban.model.Epic;
 
@@ -17,65 +19,46 @@ public class EpicHttpHandler extends BaseHttpHandler {
     }
 
     @Override
-    protected void toGet(HttpExchange exchange) throws IOException {
+    protected void doGet(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr == null) {
             sendJson(exchange, gson.toJson(manager.getAllEpics()), 200);
-            return;
         }
 
-        int id;
-        try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            sendJson(exchange, "bad id", 400);
-            return;
-        }
+        int id = parseIdOrBadRequest(idStr);
 
         Epic epic = manager.getEpicById(id);
         if (epic == null) {
-            sendNotFound(exchange);
+            throw new NotFoundException("epic " + id + " not found");
         } else {
             sendJson(exchange, gson.toJson(epic), 200);
         }
     }
 
     @Override
-    protected void toPost(HttpExchange exchange) throws IOException {
+    protected void doPost(HttpExchange exchange) throws IOException {
         String body = readBody(exchange);
-        Epic epic;
-        try {
-            epic = gson.fromJson(body, Epic.class);
-        } catch (RuntimeException je) {
-            sendJson(exchange, "bad json", 400);
-            return;
-        }
+        Epic epic = gson.fromJson(body, Epic.class);
         if (epic == null) {
-            sendJson(exchange, "bad json", 400);
-            return;
+            throw new BadRequestException("bad json");
         }
 
-        try {
-            Integer id = epic.getId();
-            if (id == null || id == 0) {
-                Epic created = manager.addEpic(epic);
-                sendJson(exchange, gson.toJson(created), 201);
-            } else {
-                Epic old = manager.getEpicById(id);
-                if (old == null) {
-                    sendNotFound(exchange);
-                    return;
-                }
-                manager.updateEpic(epic);
-                sendJson(exchange, gson.toJson(epic), 200);
+        Integer id = epic.getId();
+        if (id == null || id == 0) {
+            Epic created = manager.addEpic(epic);
+            sendJson(exchange, gson.toJson(created), 201);
+        } else {
+            Epic old = manager.getEpicById(id);
+            if (old == null) {
+                throw new NotFoundException("epic " + id + " not found");
             }
-        } catch (IllegalArgumentException iae) {
-            sendHasInteractions(exchange);
+            manager.updateEpic(epic);
+            sendJson(exchange, gson.toJson(epic), 200);
         }
     }
 
     @Override
-    protected void toDelete(HttpExchange exchange) throws IOException {
+    protected void doDelete(HttpExchange exchange) throws IOException {
         String idStr = queryParameter(exchange, "id");
         if (idStr == null) {
             manager.deleteAllEpics();
@@ -83,18 +66,11 @@ public class EpicHttpHandler extends BaseHttpHandler {
             return;
         }
 
-        int id;
-        try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            sendJson(exchange, "bad id", 400);
-            return;
-        }
+        int id = parseIdOrBadRequest(idStr);
 
         Epic existed = manager.getEpicById(id);
         if (existed == null) {
-            sendNotFound(exchange);
-            return;
+            throw new NotFoundException("epic " + id + " not found");
         }
 
         manager.deleteEpicById(id);
